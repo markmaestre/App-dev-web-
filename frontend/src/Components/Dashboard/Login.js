@@ -40,11 +40,11 @@ function Login() {
     
     try {
       const res = await axios.post('http://localhost:4000/api/auth/login', { email, password });
-      const { username, role } = res.data.user;
+      const { _id, username, role } = res.data.user;
+     localStorage.setItem('user', JSON.stringify({ _id, username, role }));
 
-      localStorage.setItem('user', JSON.stringify({ username, role }));
       
-      // Success notification
+      
       const successNotification = document.createElement('div');
       successNotification.innerHTML = `
         <div style="

@@ -420,7 +420,7 @@ const styles = {
   }
 };
 
-// Add floating animation via CSS-in-JS
+
 const styleSheet = document.createElement('style');
 styleSheet.textContent = `
   @keyframes float {
