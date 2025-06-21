@@ -1,10 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { Search, BookOpen, Users, Award, Clock, Star } from 'lucide-react';
+import { Search, BookOpen, Users, Award, Clock, Star, Play, Video, FileText, Filter } from 'lucide-react';
 
-function Elearning() {
+function SmartFarmAcademy() {
   const [selectedArticle, setSelectedArticle] = useState(null);
+  const [selectedVideo, setSelectedVideo] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [contentType, setContentType] = useState('all'); // 'all', 'articles', 'videos'
 
   const articles = [
     {
@@ -15,6 +17,7 @@ function Elearning() {
       readTime: '8 min read',
       rating: 4.8,
       author: 'Dr. Maria Santos',
+      type: 'article',
       excerpt: 'Discover the fundamentals of modern agriculture and sustainable farming practices that are revolutionizing food production worldwide.',
       content: `
         <h3>🌱 The Evolution of Modern Farming</h3>
@@ -45,6 +48,7 @@ function Elearning() {
       readTime: '12 min read',
       rating: 4.9,
       author: 'Prof. Juan Dela Cruz',
+      type: 'article',
       excerpt: 'Learn how to create and effectively use organic fertilizers to improve soil health and boost crop productivity naturally.',
       content: `
         <h3>🌿 Understanding Organic Fertilizers</h3>
@@ -86,6 +90,7 @@ function Elearning() {
       readTime: '15 min read',
       rating: 4.7,
       author: 'Eng. Lisa Chen',
+      type: 'article',
       excerpt: 'Explore cutting-edge irrigation technologies that maximize water efficiency while maintaining optimal crop growth conditions.',
       content: `
         <h3>💧 The Future of Water Management in Agriculture</h3>
@@ -122,186 +127,99 @@ function Elearning() {
         <h4>Implementation Strategy:</h4>
         <p>Start with a pilot area to test and refine the system before full-scale deployment. Consider factors like crop type, field topography, water source, and budget when selecting components.</p>
       `
+    }
+  ];
+
+  const videos = [
+    {
+      id: 1,
+      title: 'Complete Guide to Soil Preparation',
+      category: 'basics',
+      difficulty: 'Beginner',
+      duration: '18:32',
+      rating: 4.9,
+      author: 'Farm Master Pro',
+      type: 'video',
+      views: '125K',
+      thumbnail: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=500&h=300&fit=crop',
+      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+      excerpt: 'Master the essential techniques of soil preparation, from testing pH levels to creating the perfect growing environment for your crops.',
+      description: 'In this comprehensive video tutorial, you\'ll learn everything about soil preparation including soil testing, pH adjustment, organic matter incorporation, and creating optimal growing conditions for different crops.'
+    },
+    {
+      id: 2,
+      title: 'Organic Composting: From Waste to Gold',
+      category: 'organic',
+      difficulty: 'Beginner',
+      duration: '22:15',
+      rating: 4.8,
+      author: 'Green Thumb Academy',
+      type: 'video',
+      views: '89K',
+      thumbnail: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=500&h=300&fit=crop',
+      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+      excerpt: 'Transform your kitchen scraps and yard waste into nutrient-rich compost with this step-by-step video guide.',
+      description: 'Learn the art and science of composting with detailed demonstrations of layering techniques, moisture management, turning schedules, and troubleshooting common problems.'
+    },
+    {
+      id: 3,
+      title: 'Smart Farming with IoT Sensors',
+      category: 'technology',
+      difficulty: 'Advanced',
+      duration: '35:47',
+      rating: 4.7,
+      author: 'AgriTech Solutions',
+      type: 'video',
+      views: '67K',
+      thumbnail: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=500&h=300&fit=crop',
+      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+      excerpt: 'Discover how IoT sensors and smart technology are revolutionizing modern agriculture with real-time data and automation.',
+      description: 'Explore the latest in agricultural technology with demonstrations of sensor installation, data collection, automation systems, and how to interpret sensor data for optimal farming decisions.'
     },
     {
       id: 4,
-      title: 'Integrated Pest Management Strategies',
-      category: 'pest-control',
+      title: 'Hydroponic Systems Setup for Beginners',
+      category: 'technology',
       difficulty: 'Intermediate',
-      readTime: '10 min read',
+      duration: '28:12',
       rating: 4.6,
-      author: 'Dr. Robert Kim',
-      excerpt: 'Master eco-friendly pest control methods that protect crops while preserving beneficial insects and environmental health.',
-      content: `
-        <h3>🐛 Sustainable Pest Control Approaches</h3>
-        <p>Integrated Pest Management (IPM) combines multiple strategies to control pests effectively while minimizing risks to human health and the environment.</p>
-        
-        <h4>Core IPM Principles:</h4>
-        <p><strong>Prevention:</strong> The first line of defense involves creating conditions that prevent pest problems from occurring.</p>
-        
-        <p><strong>Monitoring:</strong> Regular scouting and identification of pests and beneficial insects to make informed decisions.</p>
-        
-        <p><strong>Threshold-Based Decisions:</strong> Taking action only when pest populations reach economically damaging levels.</p>
-        
-        <p><strong>Multiple Control Methods:</strong> Using a combination of biological, cultural, physical, and chemical controls.</p>
-        
-        <h4>IPM Control Methods:</h4>
-        <p><strong>Biological Control:</strong></p>
-        <p>• Release beneficial insects like ladybugs and parasitic wasps</p>
-        <p>• Use microbial pesticides (Bt, beneficial bacteria)</p>
-        <p>• Encourage natural predators through habitat management</p>
-        
-        <p><strong>Cultural Control:</strong></p>
-        <p>• Crop rotation to break pest life cycles</p>
-        <p>• Resistant varieties selection</p>
-        <p>• Proper sanitation and field hygiene</p>
-        <p>• Timing of planting and harvesting</p>
-        
-        <p><strong>Physical/Mechanical Control:</strong></p>
-        <p>• Row covers and screens</p>
-        <p>• Traps and barriers</p>
-        <p>• Cultivation and mulching</p>
-        <p>• Hand removal of pests</p>
-        
-        <h4>Monitoring and Scouting:</h4>
-        <p>• Inspect crops weekly during growing season</p>
-        <p>• Use yellow sticky traps for flying insects</p>
-        <p>• Check undersides of leaves for eggs and larvae</p>
-        <p>• Keep detailed records of pest populations and control measures</p>
-        
-        <h4>Economic Benefits:</h4>
-        <p>IPM programs typically reduce pesticide costs by 25-50% while maintaining or improving crop yields through better pest suppression and reduced resistance development.</p>
-      `
+      author: 'HydroGrow Channel',
+      type: 'video',
+      views: '156K',
+      thumbnail: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=500&h=300&fit=crop',
+      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+      excerpt: 'Build your first hydroponic system with this detailed tutorial covering equipment, setup, and maintenance.',
+      description: 'Complete walkthrough of setting up a hydroponic system including choosing the right system type, nutrient solutions, pH management, and troubleshooting common issues.'
     },
     {
       id: 5,
-      title: 'Soil Health Assessment and Improvement',
-      category: 'soil-management',
-      difficulty: 'Beginner',
-      readTime: '9 min read',
+      title: 'Natural Pest Control Methods',
+      category: 'pest-control',
+      difficulty: 'Intermediate',
+      duration: '25:38',
       rating: 4.8,
-      author: 'Dr. Sarah Johnson',
-      excerpt: 'Learn how to evaluate and enhance soil health for optimal crop production and long-term agricultural sustainability.',
-      content: `
-        <h3>🌱 Building the Foundation: Healthy Soil</h3>
-        <p>Soil health is the foundation of successful agriculture. Healthy soil supports plant growth, stores carbon, filters water, and provides habitat for countless beneficial organisms.</p>
-        
-        <h4>Key Soil Health Indicators:</h4>
-        <p><strong>Physical Properties:</strong></p>
-        <p>• Soil structure and aggregation</p>
-        <p>• Water infiltration and retention</p>
-        <p>• Bulk density and compaction</p>
-        <p>• Root penetration depth</p>
-        
-        <p><strong>Chemical Properties:</strong></p>
-        <p>• pH levels (optimal range 6.0-7.0 for most crops)</p>
-        <p>• Nutrient availability (N, P, K, micronutrients)</p>
-        <p>• Organic matter content (target: 3-5%)</p>
-        <p>• Cation exchange capacity</p>
-        
-        <p><strong>Biological Properties:</strong></p>
-        <p>• Microbial diversity and activity</p>
-        <p>• Earthworm populations</p>
-        <p>• Organic matter decomposition rate</p>
-        <p>• Root mycorrhizal associations</p>
-        
-        <h4>Simple Soil Tests You Can Do:</h4>
-        <p><strong>Jar Test (Soil Texture):</strong></p>
-        <p>1. Fill jar 1/3 with soil sample</p>
-        <p>2. Add water to 2/3 full, shake vigorously</p>
-        <p>3. Let settle for 24 hours</p>
-        <p>4. Measure sand (bottom), silt (middle), clay (top) layers</p>
-        
-        <p><strong>Percolation Test (Drainage):</strong></p>
-        <p>1. Dig hole 12 inches deep and 6 inches wide</p>
-        <p>2. Fill with water and let drain completely</p>
-        <p>3. Refill and measure water level drop over 1 hour</p>
-        <p>4. Good drainage: 1-2 inches per hour</p>
-        
-        <h4>Soil Improvement Strategies:</h4>
-        <p><strong>Organic Matter Addition:</strong></p>
-        <p>• Add 2-4 inches of compost annually</p>
-        <p>• Use cover crops during fallow periods</p>
-        <p>• Leave crop residues when possible</p>
-        <p>• Apply aged animal manures</p>
-        
-        <p><strong>pH Management:</strong></p>
-        <p>• Add lime to raise pH in acidic soils</p>
-        <p>• Use sulfur to lower pH in alkaline soils</p>
-        <p>• Apply organic matter to buffer pH changes</p>
-        
-        <p><strong>Compaction Prevention:</strong></p>
-        <p>• Avoid working wet soils</p>
-        <p>• Use controlled traffic patterns</p>
-        <p>• Plant deep-rooted cover crops</p>
-        <p>• Reduce tillage intensity</p>
-      `
+      author: 'Eco Farm Expert',
+      type: 'video',
+      views: '98K',
+      thumbnail: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=500&h=300&fit=crop',
+      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+      excerpt: 'Protect your crops naturally with proven organic pest control methods that are safe for the environment.',
+      description: 'Learn about companion planting, beneficial insects, organic sprays, and integrated pest management strategies that protect your crops without harmful chemicals.'
     },
     {
       id: 6,
-      title: 'Crop Rotation and Companion Planting',
-      category: 'crop-management',
-      difficulty: 'Intermediate',
-      readTime: '11 min read',
-      rating: 4.9,
-      author: 'Prof. Michael Brown',
-      excerpt: 'Discover how strategic crop rotation and companion planting can naturally improve soil fertility and reduce pest problems.',
-      content: `
-        <h3>🔄 Strategic Crop Planning for Maximum Benefits</h3>
-        <p>Crop rotation and companion planting are time-tested agricultural practices that work with natural ecosystems to create more resilient and productive farming systems.</p>
-        
-        <h4>Benefits of Crop Rotation:</h4>
-        <p><strong>Soil Fertility:</strong> Different crops have varying nutrient needs and contributions. Legumes fix nitrogen, while deep-rooted crops bring up nutrients from lower soil layers.</p>
-        
-        <p><strong>Pest and Disease Control:</strong> Breaking pest life cycles by removing their preferred host plants for a season or more.</p>
-        
-        <p><strong>Weed Management:</strong> Different cultivation practices and crop canopies suppress different weed species.</p>
-        
-        <p><strong>Soil Structure:</strong> Varied root systems improve soil aggregation and organic matter distribution.</p>
-        
-        <h4>Basic Rotation Principles:</h4>
-        <p><strong>Four-Year Rotation Example:</strong></p>
-        <p>Year 1: Nitrogen-fixing legumes (beans, peas, clover)</p>
-        <p>Year 2: Leafy greens (lettuce, spinach, cabbage)</p>
-        <p>Year 3: Root vegetables (carrots, radishes, potatoes)</p>
-        <p>Year 4: Fruiting crops (tomatoes, peppers, squash)</p>
-        
-        <p><strong>Family Groupings to Avoid Repeating:</strong></p>
-        <p>• Solanaceae: Tomatoes, potatoes, peppers, eggplant</p>
-        <p>• Brassicaceae: Cabbage, broccoli, radishes, mustard</p>
-        <p>• Leguminosae: Beans, peas, clover, alfalfa</p>
-        <p>• Cucurbitaceae: Cucumbers, squash, melons, pumpkins</p>
-        
-        <h4>Companion Planting Strategies:</h4>
-        <p><strong>Classic Combinations:</strong></p>
-        <p><strong>Three Sisters (Corn, Beans, Squash):</strong></p>
-        <p>• Corn provides support for climbing beans</p>
-        <p>• Beans fix nitrogen for corn and squash</p>
-        <p>• Squash leaves shade soil and deter pests</p>
-        
-        <p><strong>Tomatoes and Basil:</strong></p>
-        <p>• Basil repels aphids and hornworms</p>
-        <p>• Both plants have similar water and nutrient needs</p>
-        <p>• Improved flavor in both crops</p>
-        
-        <p><strong>Pest-Repelling Plants:</strong></p>
-        <p>• Marigolds: Repel nematodes and aphids</p>
-        <p>• Nasturtiums: Trap crop for aphids and cucumber beetles</p>
-        <p>• Mint: Deters ants and rodents (plant in containers)</p>
-        
-        <h4>Planning Your Rotation:</h4>
-        <p>1. Map your garden/field areas</p>
-        <p>2. List crops you want to grow and their families</p>
-        <p>3. Plan 3-4 year rotation schedule</p>
-        <p>4. Include cover crops in fallow periods</p>
-        <p>5. Keep detailed records for future planning</p>
-        
-        <h4>Common Mistakes to Avoid:</h4>
-        <p>• Planting same family crops in consecutive years</p>
-        <p>• Ignoring soil nutrient needs of different crops</p>
-        <p>• Not including nitrogen-fixing crops in rotation</p>
-        <p>• Failing to account for crop residue decomposition time</p>
-      `
+      title: 'Vertical Farming: Maximizing Space',
+      category: 'technology',
+      difficulty: 'Advanced',
+      duration: '31:25',
+      rating: 4.5,
+      author: 'Urban Farm Tech',
+      type: 'video',
+      views: '78K',
+      thumbnail: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=500&h=300&fit=crop',
+      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+      excerpt: 'Explore vertical farming techniques to grow more food in less space using innovative growing systems.',
+      description: 'Discover how to build and manage vertical growing systems, from simple tower gardens to complex multi-level setups with automated lighting and irrigation.'
     }
   ];
 
@@ -311,19 +229,26 @@ function Elearning() {
     { id: 'organic', name: 'Organic Methods', icon: '🌿' },
     { id: 'technology', name: 'Technology', icon: '🤖' },
     { id: 'pest-control', name: 'Pest Control', icon: '🐛' },
-    { id: 'soil-management', name: 'Soil Management', icon: '🌍' },
-    { id: 'crop-management', name: 'Crop Management', icon: '🌾' }
   ];
 
-  const filteredArticles = useMemo(() => {
-    return articles.filter(article => {
-      const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          article.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          article.author.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = selectedCategory === 'all' || article.category === selectedCategory;
-      return matchesSearch && matchesCategory;
+  const contentTypes = [
+    { id: 'all', name: 'All Content', icon: '📚' },
+    { id: 'articles', name: 'Articles', icon: '📄' },
+    { id: 'videos', name: 'Videos', icon: '🎥' },
+  ];
+
+  const allContent = [...articles, ...videos];
+
+  const filteredContent = useMemo(() => {
+    return allContent.filter(item => {
+      const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          item.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          item.author.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+      const matchesType = contentType === 'all' || item.type === contentType.slice(0, -1);
+      return matchesSearch && matchesCategory && matchesType;
     });
-  }, [searchTerm, selectedCategory, articles]);
+  }, [searchTerm, selectedCategory, contentType, allContent]);
 
   const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
@@ -332,6 +257,13 @@ function Elearning() {
       case 'Advanced': return '#ef4444';
       default: return '#6b7280';
     }
+  };
+
+  const formatNumber = (num) => {
+    if (num >= 1000) {
+      return (num / 1000).toFixed(1) + 'K';
+    }
+    return num.toString();
   };
 
   return (
@@ -343,8 +275,8 @@ function Elearning() {
             <span className="hero-subtitle">Master Modern Agriculture</span>
           </h1>
           <p className="hero-description">
-            Discover cutting-edge farming techniques, sustainable practices, and innovative solutions 
-            to transform your agricultural journey.
+            Discover cutting-edge farming techniques through expert articles and video tutorials.
+            Transform your agricultural journey with comprehensive learning resources.
           </p>
         </div>
         <div className="hero-stats">
@@ -352,6 +284,11 @@ function Elearning() {
             <BookOpen className="stat-icon" />
             <span className="stat-number">{articles.length}</span>
             <span className="stat-label">Expert Articles</span>
+          </div>
+          <div className="stat-item">
+            <Video className="stat-icon" />
+            <span className="stat-number">{videos.length}</span>
+            <span className="stat-label">Video Tutorials</span>
           </div>
           <div className="stat-item">
             <Users className="stat-icon" />
@@ -371,7 +308,7 @@ function Elearning() {
           <Search className="search-icon" />
           <input
             type="text"
-            placeholder="Search articles, topics, or authors..."
+            placeholder="Search articles, videos, topics, or authors..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
@@ -379,81 +316,130 @@ function Elearning() {
         </div>
       </div>
 
-      <div className="categories-section">
-        <h2 className="section-title">Browse by Category</h2>
-        <div className="categories-grid">
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => setSelectedCategory(category.id)}
-              className={`category-btn ${selectedCategory === category.id ? 'active' : ''}`}
-            >
-              <span className="category-icon">{category.icon}</span>
-              <span className="category-name">{category.name}</span>
-            </button>
-          ))}
+      <div className="filter-section">
+        <div className="filter-container">
+          <div className="filter-group">
+            <h3 className="filter-title">Content Type</h3>
+            <div className="filter-buttons">
+              {contentTypes.map((type) => (
+                <button
+                  key={type.id}
+                  onClick={() => setContentType(type.id)}
+                  className={`filter-btn ${contentType === type.id ? 'active' : ''}`}
+                >
+                  <span className="filter-icon">{type.icon}</span>
+                  <span className="filter-name">{type.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="filter-group">
+            <h3 className="filter-title">Category</h3>
+            <div className="filter-buttons">
+              {categories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`filter-btn ${selectedCategory === category.id ? 'active' : ''}`}
+                >
+                  <span className="filter-icon">{category.icon}</span>
+                  <span className="filter-name">{category.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
-      {!selectedArticle ? (
-        <div className="articles-section">
+      {!selectedArticle && !selectedVideo ? (
+        <div className="content-section">
           <h2 className="section-title">
-            {searchTerm || selectedCategory !== 'all' 
-              ? `${filteredArticles.length} Articles Found` 
-              : 'Featured Learning Materials'}
+            {searchTerm || selectedCategory !== 'all' || contentType !== 'all'
+              ? `${filteredContent.length} Results Found` 
+              : 'Featured Learning Content'}
           </h2>
-          <div className="articles-grid">
-            {filteredArticles.map((article) => (
-              <div key={article.id} className="article-card" onClick={() => setSelectedArticle(article)}>
-                <div className="article-header">
-                  <div className="article-meta">
-                    <span 
-                      className="difficulty-badge"
-                      style={{ backgroundColor: getDifficultyColor(article.difficulty) }}
-                    >
-                      {article.difficulty}
-                    </span>
-                    <div className="article-rating">
-                      <Star className="star-icon" />
-                      <span>{article.rating}</span>
+          <div className="content-grid">
+            {filteredContent.map((item) => (
+              <div 
+                key={`${item.type}-${item.id}`} 
+                className={`content-card ${item.type}-card`}
+                onClick={() => item.type === 'article' ? setSelectedArticle(item) : setSelectedVideo(item)}
+              >
+                {item.type === 'video' && (
+                  <div className="video-thumbnail">
+                    <img src={item.thumbnail} alt={item.title} />
+                    <div className="play-overlay">
+                      <Play className="play-icon" />
+                    </div>
+                    <div className="video-duration">{item.duration}</div>
+                  </div>
+                )}
+                
+                <div className="card-content">
+                  <div className="card-header">
+                    <div className="card-meta">
+                      <div className="content-type-badge">
+                        {item.type === 'article' ? <FileText className="type-icon" /> : <Video className="type-icon" />}
+                        {item.type === 'article' ? 'Article' : 'Video'}
+                      </div>
+                      <span 
+                        className="difficulty-badge"
+                        style={{ backgroundColor: getDifficultyColor(item.difficulty) }}
+                      >
+                        {item.difficulty}
+                      </span>
+                      <div className="rating">
+                        <Star className="star-icon" />
+                        <span>{item.rating}</span>
+                      </div>
+                    </div>
+                    <div className="card-stats">
+                      <Clock className="clock-icon" />
+                      <span>{item.type === 'article' ? item.readTime : item.duration}</span>
+                      {item.type === 'video' && (
+                        <span className="views">{item.views} views</span>
+                      )}
                     </div>
                   </div>
-                  <div className="article-stats">
-                    <Clock className="clock-icon" />
-                    <span>{article.readTime}</span>
+                  
+                  <h3 className="card-title">{item.title}</h3>
+                  <p className="card-excerpt">{item.excerpt}</p>
+                  
+                  <div className="card-footer">
+                    <span className="card-author">By {item.author}</span>
+                    <button className="action-btn">
+                      {item.type === 'article' ? 'Read More' : 'Watch Now'} →
+                    </button>
                   </div>
-                </div>
-                
-                <h3 className="article-title">{article.title}</h3>
-                <p className="article-excerpt">{article.excerpt}</p>
-                
-                <div className="article-footer">
-                  <span className="article-author">By {article.author}</span>
-                  <button className="read-more-btn">Read More →</button>
                 </div>
               </div>
             ))}
           </div>
         </div>
-      ) : (
+      ) : selectedArticle ? (
         <div className="article-view">
           <button 
             onClick={() => setSelectedArticle(null)}
             className="back-btn"
           >
-            ← Back to Articles
+            ← Back to Content
           </button>
           
           <div className="article-content">
             <div className="article-hero">
               <div className="article-meta-header">
+                <div className="content-type-badge large">
+                  <FileText className="type-icon" />
+                  Article
+                </div>
                 <span 
                   className="difficulty-badge large"
                   style={{ backgroundColor: getDifficultyColor(selectedArticle.difficulty) }}
                 >
                   {selectedArticle.difficulty}
                 </span>
-                <div className="article-rating large">
+                <div className="rating large">
                   <Star className="star-icon" />
                   <span>{selectedArticle.rating}</span>
                 </div>
@@ -475,6 +461,66 @@ function Elearning() {
               className="article-body"
               dangerouslySetInnerHTML={{ __html: selectedArticle.content }}
             />
+          </div>
+        </div>
+      ) : (
+        <div className="video-view">
+          <button 
+            onClick={() => setSelectedVideo(null)}
+            className="back-btn"
+          >
+            ← Back to Content
+          </button>
+          
+          <div className="video-content">
+            <div className="video-hero">
+              <div className="video-meta-header">
+                <div className="content-type-badge large">
+                  <Video className="type-icon" />
+                  Video
+                </div>
+                <span 
+                  className="difficulty-badge large"
+                  style={{ backgroundColor: getDifficultyColor(selectedVideo.difficulty) }}
+                >
+                  {selectedVideo.difficulty}
+                </span>
+                <div className="rating large">
+                  <Star className="star-icon" />
+                  <span>{selectedVideo.rating}</span>
+                </div>
+              </div>
+              
+              <h1 className="video-main-title">{selectedVideo.title}</h1>
+              
+              <div className="video-details">
+                <span className="video-author">By {selectedVideo.author}</span>
+                <span className="video-divider">•</span>
+                <span className="video-duration">
+                  <Clock className="clock-icon-small" />
+                  {selectedVideo.duration}
+                </span>
+                <span className="video-divider">•</span>
+                <span className="video-views">{selectedVideo.views} views</span>
+              </div>
+            </div>
+            
+            <div className="video-player">
+              <iframe
+                width="100%"
+                height="500"
+                src={selectedVideo.videoUrl}
+                title={selectedVideo.title}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+            
+            <div className="video-description">
+              <h3>About This Video</h3>
+              <p>{selectedVideo.description}</p>
+            </div>
           </div>
         </div>
       )}
@@ -534,7 +580,7 @@ function Elearning() {
         .hero-stats {
           display: flex;
           justify-content: center;
-          gap: 3rem;
+          gap: 2rem;
           flex-wrap: wrap;
         }
 
@@ -611,9 +657,67 @@ function Elearning() {
           box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
-        .categories-section {
+        .filter-section {
           padding: 2rem;
           background: white;
+          border-top: 1px solid #e5e7eb;
+        }
+
+        .filter-container {
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+
+        .filter-group {
+          margin-bottom: 2rem;
+        }
+
+        .filter-title {
+          font-size: 1.25rem;
+          font-weight: 600;
+          margin-bottom: 1rem;
+          color: #374151;
+        }
+
+        .filter-buttons {
+          display: flex;
+          gap: 1rem;
+          flex-wrap: wrap;
+        }
+
+        .filter-btn {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1.5rem;
+          border: 2px solid #e5e7eb;
+          border-radius: 25px;
+          background: white;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          font-size: 0.875rem;
+          font-weight: 500;
+        }
+
+        .filter-btn:hover {
+          border-color: #667eea;
+          background: #f8fafc;
+        }
+
+        .filter-btn.active {
+          background: linear-gradient(135deg, #667eea, #764ba2);
+          color: white;
+          border-color: transparent;
+        }
+
+        .filter-icon {
+          font-size: 1rem;
+        }
+
+        .content-section {
+          padding: 2rem;
+          background: #f8fafc;
+          min-height: 50vh;
         }
 
         .section-title {
@@ -624,90 +728,122 @@ function Elearning() {
           color: #1a202c;
         }
 
-        .categories-grid {
+        .content-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 1rem;
-          max-width: 1200px;
-          margin: 0 auto;
-        }
-
-        .category-btn {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 0.75rem;
-          padding: 1.5rem;
-          border: 2px solid #e5e7eb;
-          border-radius: 16px;
-          background: white;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          text-decoration: none;
-        }
-
-        .category-btn:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-          border-color: #667eea;
-        }
-
-        .category-btn.active {
-          background: linear-gradient(135deg, #667eea, #764ba2);
-          color: white;
-          border-color: transparent;
-        }
-
-        .category-icon {
-          font-size: 2rem;
-        }
-
-        .category-name {
-          font-weight: 600;
-          font-size: 1rem;
-        }
-
-        .articles-section {
-          padding: 2rem;
-          background: #f8fafc;
-          min-height: 50vh;
-        }
-
-        .articles-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
           gap: 2rem;
           max-width: 1400px;
           margin: 0 auto;
         }
 
-        .article-card {
+        .content-card {
           background: white;
           border-radius: 20px;
-          padding: 1.5rem;
+          overflow: hidden;
           cursor: pointer;
           transition: all 0.3s ease;
           border: 1px solid #e5e7eb;
           height: fit-content;
         }
 
-        .article-card:hover {
+        .content-card:hover {
           transform: translateY(-5px);
           box-shadow: 0 20px 40px rgba(0,0,0,0.1);
           border-color: #667eea;
         }
 
-        .article-header {
+        .video-thumbnail {
+          position: relative;
+          width: 100%;
+          height: 200px;
+          overflow: hidden;
+        }
+
+        .video-thumbnail img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .play-overlay {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: rgba(0,0,0,0.7);
+          border-radius: 50%;
+          width: 60px;
+          height: 60px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+        }
+
+        .content-card:hover .play-overlay {
+          background: rgba(102, 126, 234, 0.9);
+          transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .play-icon {
+          width: 24px;
+          height: 24px;
+          color: white;
+          margin-left: 3px;
+        }
+
+        .video-duration {
+          position: absolute;
+          bottom: 8px;
+          right: 8px;
+          background: rgba(0,0,0,0.8);
+          color: white;
+          padding: 0.25rem 0.5rem;
+          border-radius: 4px;
+          font-size: 0.75rem;
+          font-weight: 600;
+        }
+
+        .card-content {
+          padding: 1.5rem;
+        }
+
+        .card-header {
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
           margin-bottom: 1rem;
         }
 
-        .article-meta {
+        .card-meta {
           display: flex;
           align-items: center;
           gap: 0.75rem;
+          flex-wrap: wrap;
+        }
+
+        .content-type-badge {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+          padding: 0.25rem 0.75rem;
+          background: #f3f4f6;
+          border-radius: 15px;
+          font-size: 0.75rem;
+          font-weight: 600;
+          color: #374151;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .content-type-badge.large {
+          padding: 0.5rem 1rem;
+          font-size: 0.875rem;
+        }
+
+        .type-icon {
+          width: 12px;
+          height: 12px;
         }
 
         .difficulty-badge {
@@ -725,7 +861,7 @@ function Elearning() {
           font-size: 0.875rem;
         }
 
-        .article-rating {
+        .rating {
           display: flex;
           align-items: center;
           gap: 0.25rem;
@@ -733,7 +869,7 @@ function Elearning() {
           font-weight: 600;
         }
 
-        .article-rating.large {
+        .rating.large {
           font-size: 1.125rem;
         }
 
@@ -743,10 +879,10 @@ function Elearning() {
           fill: currentColor;
         }
 
-        .article-stats {
+        .card-stats {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
+          gap: 0.75rem;
           color: #6b7280;
           font-size: 0.875rem;
         }
@@ -761,7 +897,11 @@ function Elearning() {
           height: 12px;
         }
 
-        .article-title {
+        .views {
+          color: #6b7280;
+        }
+
+        .card-title {
           font-size: 1.25rem;
           font-weight: 700;
           line-height: 1.4;
@@ -769,13 +909,13 @@ function Elearning() {
           color: #1a202c;
         }
 
-        .article-excerpt {
+        .card-excerpt {
           color: #4b5563;
           line-height: 1.6;
           margin-bottom: 1.5rem;
         }
 
-        .article-footer {
+        .card-footer {
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -783,12 +923,12 @@ function Elearning() {
           border-top: 1px solid #e5e7eb;
         }
 
-        .article-author {
+        .card-author {
           color: #6b7280;
           font-size: 0.875rem;
         }
 
-        .read-more-btn {
+        .action-btn {
           background: linear-gradient(135deg, #667eea, #764ba2);
           color: white;
           border: none;
@@ -799,12 +939,12 @@ function Elearning() {
           transition: all 0.3s ease;
         }
 
-        .read-more-btn:hover {
+        .action-btn:hover {
           transform: translateX(3px);
           box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
-        .article-view {
+        .article-view, .video-view {
           background: white;
           min-height: 100vh;
         }
@@ -832,28 +972,29 @@ function Elearning() {
           transform: translateX(-3px);
         }
 
-        .article-content {
+        .article-content, .video-content {
           max-width: 800px;
           margin: 0 auto;
           padding: 2rem;
         }
 
-        .article-hero {
+        .article-hero, .video-hero {
           text-align: center;
           margin-bottom: 3rem;
           padding: 2rem 0;
           border-bottom: 2px solid #e5e7eb;
         }
 
-        .article-meta-header {
+        .article-meta-header, .video-meta-header {
           display: flex;
           justify-content: center;
           align-items: center;
           gap: 1rem;
           margin-bottom: 1.5rem;
+          flex-wrap: wrap;
         }
 
-        .article-main-title {
+        .article-main-title, .video-main-title {
           font-size: 2.5rem;
           font-weight: 800;
           line-height: 1.2;
@@ -861,17 +1002,45 @@ function Elearning() {
           margin-bottom: 1rem;
         }
 
-        .article-details {
+        .article-details, .video-details {
           display: flex;
           justify-content: center;
           align-items: center;
           gap: 1rem;
           color: #6b7280;
           font-size: 1rem;
+          flex-wrap: wrap;
         }
 
-        .article-divider {
+        .article-divider, .video-divider {
           color: #d1d5db;
+        }
+
+        .video-player {
+          margin: 2rem 0;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .video-description {
+          margin-top: 2rem;
+          padding: 2rem;
+          background: #f8fafc;
+          border-radius: 12px;
+        }
+
+        .video-description h3 {
+          font-size: 1.5rem;
+          font-weight: 700;
+          margin-bottom: 1rem;
+          color: #1a202c;
+        }
+
+        .video-description p {
+          color: #4b5563;
+          line-height: 1.6;
+          font-size: 1.125rem;
         }
 
         .article-body {
@@ -923,28 +1092,40 @@ function Elearning() {
           }
 
           .hero-stats {
-            gap: 1.5rem;
+            gap: 1rem;
+            grid-template-columns: repeat(2, 1fr);
+            display: grid;
           }
 
-          .categories-grid {
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+          .filter-buttons {
+            justify-content: center;
           }
 
-          .articles-grid {
+          .content-grid {
             grid-template-columns: 1fr;
           }
 
-          .article-main-title {
+          .article-main-title, .video-main-title {
             font-size: 2rem;
           }
 
-          .article-details {
+          .article-details, .video-details {
             flex-direction: column;
             gap: 0.5rem;
           }
 
           .search-input {
             font-size: 1rem;
+          }
+
+          .card-meta {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+          }
+
+          .video-player iframe {
+            height: 250px;
           }
         }
 
@@ -954,21 +1135,141 @@ function Elearning() {
           }
 
           .hero-stats {
-            flex-direction: column;
-            align-items: center;
+            grid-template-columns: 1fr;
           }
 
-          .article-content {
+          .article-content, .video-content {
             padding: 1rem;
           }
 
           .back-btn {
             margin: 1rem;
           }
+
+          .filter-buttons {
+            flex-direction: column;
+            align-items: stretch;
+          }
+
+          .card-footer {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: stretch;
+          }
+
+          .action-btn {
+            width: 100%;
+            text-align: center;
+          }
+        }
+
+                .article-body ul,
+        .article-body ol {
+          margin: 1rem 0;
+          padding-left: 2rem;
+        }
+
+        .article-body li {
+          margin-bottom: 0.5rem;
+        }
+
+        .article-body a {
+          color: #667eea;
+          text-decoration: none;
+          font-weight: 600;
+        }
+
+        .article-body a:hover {
+          text-decoration: underline;
+        }
+
+        /* Additional utility classes */
+        .hidden {
+          display: none;
+        }
+
+        .text-center {
+          text-align: center;
+        }
+
+        .mt-1 { margin-top: 0.25rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-3 { margin-top: 0.75rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-5 { margin-top: 1.5rem; }
+        .mt-6 { margin-top: 2rem; }
+        .mt-8 { margin-top: 2.5rem; }
+        .mt-10 { margin-top: 3rem; }
+
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-3 { margin-bottom: 0.75rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-5 { margin-bottom: 1.5rem; }
+        .mb-6 { margin-bottom: 2rem; }
+        .mb-8 { margin-bottom: 2.5rem; }
+        .mb-10 { margin-bottom: 3rem; }
+
+        .px-1 { padding-left: 0.25rem; padding-right: 0.25rem; }
+        .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+        .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .px-5 { padding-left: 1.5rem; padding-right: 1.5rem; }
+        .px-6 { padding-left: 2rem; padding-right: 2rem; }
+        .px-8 { padding-left: 2.5rem; padding-right: 2.5rem; }
+        .px-10 { padding-left: 3rem; padding-right: 3rem; }
+
+        .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+        .py-5 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+        .py-6 { padding-top: 2rem; padding-bottom: 2rem; }
+        .py-8 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+        .py-10 { padding-top: 3rem; padding-bottom: 3rem; }
+
+        /* Animation classes */
+        .fade-in {
+          animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        .slide-up {
+          animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+          from { transform: translateY(20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Loading state */
+        .loading {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 200px;
+        }
+
+        .loading-spinner {
+          width: 40px;
+          height: 40px;
+          border: 4px solid rgba(102, 126, 234, 0.2);
+          border-radius: 50%;
+          border-top-color: #667eea;
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
         }
       `}</style>
     </div>
   );
 }
 
-export default Elearning;
+export default SmartFarmAcademy;
