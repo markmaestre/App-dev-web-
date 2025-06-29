@@ -1,1087 +1,767 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-function Login() {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+const Login = () => {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [focusedField, setFocusedField] = useState('');
-  const [errors, setErrors] = useState({});
+  const [focusedInput, setFocusedInput] = useState('');
+  const navigate = useNavigate();
 
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!email) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = 'Please enter a valid email';
-    }
-    
-    if (!password) {
-      newErrors.password = 'Password is required';
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
-  const handleLogin = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!validateForm()) return;
-    
-    setIsLoading(true);
-    setErrors({});
-    
+    setLoading(true);
+    setError('');
+
     try {
-      const res = await axios.post('http://localhost:4000/api/auth/login', { email, password });
-      const { _id, username, role } = res.data.user;
-     localStorage.setItem('user', JSON.stringify({ _id, username, role }));
-
-      
-      
-      const successNotification = document.createElement('div');
-      successNotification.innerHTML = `
-        <div style="
-          position: fixed;
-          top: 20px;
-          right: 20px;
-          background: linear-gradient(135deg, #16a34a, #15803d);
-          color: white;
-          padding: 18px 24px;
-          border-radius: 8px;
-          box-shadow: 0 10px 25px rgba(22, 163, 74, 0.3);
-          z-index: 1000;
-          font-weight: 600;
-          font-size: 15px;
-          animation: slideIn 0.3s ease;
-          border-left: 4px solid #22c55e;
-        ">
-          Welcome back, ${username}! 🌾
-        </div>
-      `;
-      document.body.appendChild(successNotification);
-      
-      setTimeout(() => {
-        document.body.removeChild(successNotification);
-      }, 3000);
-
-      setTimeout(() => {
-        if (role === 'admin') {
-          navigate('/adminDashboard');
-        } else if (role === 'user') {
-          navigate('/userDashboard');
-        } else {
-          setErrors({ general: 'Unknown user role' });
-        }
-      }, 1500);
-    } catch (err) {
-      console.error('Login Error:', err);
-      setErrors({ 
-        general: err.response?.data?.message || 'Invalid credentials. Please try again.' 
+      const res = await axios.post('http://localhost:4000/api/users/login', {
+        email: formData.email,
+        password: formData.password,
       });
+
+      const { token, user } = res.data;
+
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+
+      if (user.role === 'admin') {
+        navigate('/adminDashboard');
+      } else {
+        navigate('/userDashboard');
+      }
+
+    } catch (err) {
+      if (err.response?.status === 403) {
+        setError('Your account is banned. Contact support.');
+      } else if (err.response?.status === 400) {
+        setError('Invalid email or password');
+      } else {
+        setError('Login failed. Please try again.');
+      }
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   return (
     <div className="login-container">
-      {/* Enhanced Background */}
-      <div className="bg-pattern">
-        <div className="floating-particles">
-          <div className="particle particle-1"></div>
-          <div className="particle particle-2"></div>
-          <div className="particle particle-3"></div>
-          <div className="particle particle-4"></div>
-          <div className="particle particle-5"></div>
-          <div className="particle particle-6"></div>
-        </div>
-        <div className="gradient-mesh"></div>
-        <div className="grid-overlay"></div>
+      {/* Animated background elements */}
+      <div className="bg-elements">
+        <div className="floating-leaf leaf-1">🌿</div>
+        <div className="floating-leaf leaf-2">🍃</div>
+        <div className="floating-leaf leaf-3">🌱</div>
+        <div className="floating-leaf leaf-4">🌿</div>
+        <div className="floating-circle circle-1"></div>
+        <div className="floating-circle circle-2"></div>
+        <div className="floating-circle circle-3"></div>
       </div>
 
-      {/* Main Content */}
-      <div className="login-wrapper">
-        {/* Enhanced Login Card */}
-        <div className="login-card">
-          {/* Professional Header */}
-          <div className="brand-header">
-            <div className="brand-logo">
-              <div className="logo-container">
-                <div className="logo-icon">
-                  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                    <path d="M16 2L20 8H28L22 14L24 22L16 18L8 22L10 14L4 8H12L16 2Z" fill="currentColor" fillOpacity="0.9"/>
-                    <path d="M16 6L18 10H22L19 13L20 17L16 15L12 17L13 13L10 10H14L16 6Z" fill="currentColor" fillOpacity="0.6"/>
-                  </svg>
-                </div>
-              </div>
+      <div className="login-box">
+        <div className="login-header">
+          <div className="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#4CAF50">
+              <path d="M12 2L4 7v10l8 5 8-5V7l-8-5zm0 2.5L18 9v6l-6 3.5-6-3.5V9l6-3.5z"/>
+              <path d="M12 12l-4-2v4l4 2 4-2v-4l-4 2z"/>
+            </svg>
+            <div className="logo-pulse"></div>
+          </div>
+          <h2>Welcome to Login</h2>
+          <p>Sign in to manage your farm operations</p>
+        </div>
+        
+        {error && (
+          <div className="error-message animate-shake">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <div className={`form-group ${focusedInput === 'email' ? 'focused' : ''} ${formData.email ? 'filled' : ''}`}>
+            <label htmlFor="email">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+              </svg>
+              Email Address
+            </label>
+            <div className="input-wrapper">
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+                onFocus={() => setFocusedInput('email')}
+                onBlur={() => setFocusedInput('')}
+                placeholder="farmer@example.com"
+              />
+              <div className="input-highlight"></div>
             </div>
-            <div className="brand-text">
-              <h1>SmartFarm</h1>
-              <p className="tagline">Professional Agricultural Management Platform</p>
+          </div>
+          
+          <div className={`form-group ${focusedInput === 'password' ? 'focused' : ''} ${formData.password ? 'filled' : ''}`}>
+            <label htmlFor="password">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+              </svg>
+              Password
+            </label>
+            <div className="input-wrapper">
+              <div className="password-input">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                  onFocus={() => setFocusedInput('password')}
+                  onBlur={() => setFocusedInput('')}
+                  placeholder="Enter your password"
+                />
+                <button 
+                  type="button" 
+                  className="toggle-password"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  <div className="eye-animation">
+                    {showPassword ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 6a9.77 9.77 0 018.82 5.5 9.647 9.647 0 01-2.41 3.12l1.41 1.41c1.39-1.23 2.49-2.77 3.18-4.53C21.27 7.11 17 4 12 4c-1.27 0-2.49.2-3.64.57l1.65 1.65C10.66 6.09 11.32 6 12 6zm-1.07 1.14L13 9.21c.57.25 1.03.71 1.28 1.28l2.07 2.07c.08-.34.14-.7.14-1.07C16.5 9.01 14.48 7 12 7c-.37 0-.72.05-1.07.14zM2.01 3.87l2.68 2.68A11.738 11.738 0 001 11.5C2.73 15.89 7 19 12 19c1.52 0 2.98-.29 4.32-.82l3.42 3.42 1.41-1.41L3.42 2.45 2.01 3.87zm7.5 7.5l2.61 2.61c-.04.01-.08.02-.12.02-1.38 0-2.5-1.12-2.5-2.5 0-.05.01-.08.01-.13zm-3.4-3.4l1.75 1.75c-.23.55-.36 1.15-.36 1.78 0 2.48 2.02 4.5 4.5 4.5.63 0 1.23-.13 1.77-.36l.98.98c-.88.24-1.8.38-2.75.38-3.48 0-6.82-2.04-8.47-5.33.47-1.01 1.1-1.94 1.87-2.72z"/>
+                      </svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                      </svg>
+                    )}
+                  </div>
+                </button>
+              </div>
+              <div className="input-highlight"></div>
             </div>
           </div>
 
-          {/* Enhanced Error Alert */}
-          {errors.general && (
-            <div className="error-alert">
-              <div className="error-icon">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                  <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zM7 4h2v5H7V4zM7 11h2v2H7v-2z"/>
-                </svg>
-              </div>
-              <div className="error-content">
-                <span className="error-title">Authentication Failed</span>
-                <span className="error-message">{errors.general}</span>
+          {/* Password strength indicator */}
+          {formData.password && (
+            <div className="password-strength">
+              <div className="strength-bars">
+                <div className={`bar ${formData.password.length >= 4 ? 'active' : ''}`}></div>
+                <div className={`bar ${formData.password.length >= 6 ? 'active' : ''}`}></div>
+                <div className={`bar ${formData.password.length >= 8 ? 'active' : ''}`}></div>
+                <div className={`bar ${formData.password.length >= 10 ? 'active' : ''}`}></div>
               </div>
             </div>
           )}
 
-          {/* Enhanced Form */}
-          <form onSubmit={handleLogin} className="login-form">
-            {/* Email Field */}
-            <div className="form-group">
-              <label className="form-label">
-                <span className="label-text">Email Address</span>
-                <span className="label-required">*</span>
-              </label>
-              <div className={`input-wrapper ${focusedField === 'email' ? 'focused' : ''} ${errors.email ? 'error' : ''}`}>
-                <div className="input-prefix">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                    <polyline points="22,6 12,13 2,6"/>
-                  </svg>
-                </div>
-                <input
-                  type="email"
-                  placeholder="Enter your email address"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  onFocus={() => setFocusedField('email')}
-                  onBlur={() => setFocusedField('')}
-                  className="form-input"
-                  disabled={isLoading}
-                  autoComplete="email"
-                />
-                <div className="input-border"></div>
-              </div>
-              {errors.email && (
-                <div className="error-text">
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-                    <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zM7 4h2v5H7V4zM7 11h2v2H7v-2z"/>
-                  </svg>
-                  {errors.email}
-                </div>
-              )}
-            </div>
-
-            {/* Password Field */}
-            <div className="form-group">
-              <div className="form-label-row">
-                <label className="form-label">
-                  <span className="label-text">Password</span>
-                  <span className="label-required">*</span>
-                </label>
-                <Link to="/forgot-password" className="forgot-link">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M9 12l2 2 4-4"/>
-                    <path d="M21 12c-1 0-3-1-3-3s2-3 3-3 3 1 3 3-2 3-3 3"/>
-                    <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3"/>
-                  </svg>
-                  Forgot Password?
-                </Link>
-              </div>
-              <div className={`input-wrapper ${focusedField === 'password' ? 'focused' : ''} ${errors.password ? 'error' : ''}`}>
-                <div className="input-prefix">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                    <circle cx="12" cy="16" r="1"/>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                  </svg>
-                </div>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  onFocus={() => setFocusedField('password')}
-                  onBlur={() => setFocusedField('')}
-                  className="form-input"
-                  disabled={isLoading}
-                  autoComplete="current-password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="password-toggle"
-                  disabled={isLoading}
-                >
-                  {showPassword ? (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-                      <line x1="1" y1="1" x2="23" y2="23"/>
-                    </svg>
-                  ) : (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                      <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                  )}
-                </button>
-                <div className="input-border"></div>
-              </div>
-              {errors.password && (
-                <div className="error-text">
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-                    <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zM7 4h2v5H7V4zM7 11h2v2H7v-2z"/>
-                  </svg>
-                  {errors.password}
-                </div>
-              )}
-            </div>
-
-            {/* Enhanced Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`submit-btn ${isLoading ? 'loading' : ''}`}
-            >
-              <div className="btn-content">
-                {isLoading ? (
-                  <>
-                    <div className="spinner"></div>
-                    <span>Authenticating...</span>
-                  </>
-                ) : (
-                  <>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-                      <polyline points="10,17 15,12 10,7"/>
-                      <line x1="15" y1="12" x2="3" y2="12"/>
-                    </svg>
-                    <span>Sign In to SmartFarm</span>
-                  </>
-                )}
-              </div>
-              <div className="btn-shine"></div>
+          <div className="forgot-password">
+            <button type="button" onClick={() => navigate('/forgot-password')}>
+              Forgot Password?
             </button>
-          </form>
+          </div>
 
-          {/* Enhanced Register Section */}
-          <div className="register-section">
-            <div className="divider">
-              <span>New to SmartFarm?</span>
-            </div>
-            <div className="register-card">
-              <div className="register-content">
-                <h3>Join Our Platform</h3>
-                <p>Connect with thousands of farmers and transform your agricultural operations with cutting-edge digital solutions.</p>
-                <Link to="/register" className="register-link">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                    <circle cx="8.5" cy="7" r="4"/>
-                    <line x1="20" y1="8" x2="20" y2="14"/>
-                    <line x1="23" y1="11" x2="17" y2="11"/>
-                  </svg>
-                  Create Your Account
-                </Link>
+          <button
+            type="submit"
+            disabled={loading}
+            className="login-button"
+          >
+            {loading ? (
+              <div className="loading-state">
+                <div className="spinner-advanced"></div>
+                <span>Signing In...</span>
               </div>
-            </div>
-          </div>
-        </div>
+            ) : (
+              <div className="button-content">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"/>
+                </svg>
+                <span>Sign In</span>
+                <div className="button-ripple"></div>
+              </div>
+            )}
+          </button>
+        </form>
 
-        {/* Professional Footer */}
-        <div className="login-footer">
-          <p>&copy; 2024 SmartFarm. All rights reserved.</p>
-          <div className="footer-links">
-            <a href="/privacy">Privacy Policy</a>
-            <a href="/terms">Terms of Service</a>
-            <a href="/support">Support</a>
+        <div className="register-prompt">
+          <div className="divider">
+            <span>New to FarmConnect?</span>
           </div>
+          <button
+            onClick={() => navigate('/register')}
+            className="register-button"
+          >
+            <div className="button-content">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+              </svg>
+              <span>Create Farmer Account</span>
+              <div className="button-ripple"></div>
+            </div>
+          </button>
         </div>
       </div>
 
       <style jsx>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-        
-        * {
-          box-sizing: border-box;
-        }
-
         .login-container {
           min-height: 100vh;
           display: flex;
           align-items: center;
           justify-content: center;
-          background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 100%);
-          font-family: 'Inter', system-ui, -apple-system, sans-serif;
-          padding: 24px;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          padding: 20px;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
           position: relative;
           overflow: hidden;
         }
-
-        .bg-pattern {
-          position: absolute;
-          inset: 0;
-          overflow: hidden;
-        }
-
-        .floating-particles {
-          position: absolute;
-          inset: 0;
-        }
-
-        .particle {
-          position: absolute;
-          width: 4px;
-          height: 4px;
-          background: rgba(16, 185, 129, 0.4);
-          border-radius: 50%;
-          animation: float 6s ease-in-out infinite;
-        }
-
-        .particle-1 { top: 20%; left: 10%; animation-delay: 0s; }
-        .particle-2 { top: 60%; left: 20%; animation-delay: 1s; }
-        .particle-3 { top: 40%; left: 80%; animation-delay: 2s; }
-        .particle-4 { top: 80%; left: 60%; animation-delay: 3s; }
-        .particle-5 { top: 10%; left: 70%; animation-delay: 4s; }
-        .particle-6 { top: 70%; left: 30%; animation-delay: 5s; }
-
-        .gradient-mesh {
-          position: absolute;
-          inset: 0;
-          background: 
-            radial-gradient(circle at 25% 25%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 75% 75%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 75% 25%, rgba(168, 85, 247, 0.1) 0%, transparent 50%);
-        }
-
-        .grid-overlay {
-          position: absolute;
-          inset: 0;
-          background-image: 
-            linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-          background-size: 50px 50px;
-          background-position: 0 0, 0 0;
-          animation: gridMove 20s linear infinite;
-        }
-
-        .login-wrapper {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 24px;
-          width: 100%;
-          max-width: 480px;
-          position: relative;
-          z-index: 1;
-        }
-
-        .login-card {
-          background: rgba(255, 255, 255, 0.98);
-          backdrop-filter: blur(24px);
-          border-radius: 24px;
-          padding: 48px;
-          width: 100%;
-          box-shadow: 
-            0 32px 64px rgba(0, 0, 0, 0.25),
-            0 0 0 1px rgba(255, 255, 255, 0.1),
-            inset 0 1px 0 rgba(255, 255, 255, 0.9);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          position: relative;
-          overflow: hidden;
-        }
-
-        .login-card::before {
-          content: '';
+        
+        .bg-elements {
           position: absolute;
           top: 0;
           left: 0;
-          right: 0;
-          height: 1px;
-          background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.5), transparent);
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: 1;
         }
-
-        .brand-header {
+        
+        .floating-leaf {
+          position: absolute;
+          font-size: 2rem;
+          opacity: 0.3;
+          animation: float 6s ease-in-out infinite;
+        }
+        
+        .leaf-1 { top: 10%; left: 10%; animation-delay: 0s; }
+        .leaf-2 { top: 20%; right: 15%; animation-delay: 2s; }
+        .leaf-3 { bottom: 15%; left: 20%; animation-delay: 4s; }
+        .leaf-4 { bottom: 25%; right: 10%; animation-delay: 1s; }
+        
+        .floating-circle {
+          position: absolute;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.1);
+          animation: float 8s ease-in-out infinite;
+        }
+        
+        .circle-1 {
+          width: 80px;
+          height: 80px;
+          top: 15%;
+          right: 20%;
+          animation-delay: 0s;
+        }
+        
+        .circle-2 {
+          width: 120px;
+          height: 120px;
+          bottom: 20%;
+          left: 15%;
+          animation-delay: 3s;
+        }
+        
+        .circle-3 {
+          width: 60px;
+          height: 60px;
+          top: 60%;
+          right: 10%;
+          animation-delay: 5s;
+        }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          33% { transform: translateY(-20px) rotate(5deg); }
+          66% { transform: translateY(10px) rotate(-3deg); }
+        }
+        
+        .login-box {
+          width: 100%;
+          max-width: 480px;
+          background: rgba(255, 255, 255, 0.95);
+          border-radius: 24px;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1), 0 8px 20px rgba(0, 0, 0, 0.1);
+          padding: 50px;
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          position: relative;
+          z-index: 2;
+          animation: slideUp 0.8s ease-out;
+        }
+        
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .login-header {
           text-align: center;
           margin-bottom: 40px;
         }
-
-        .brand-logo {
-          margin-bottom: 24px;
-          display: inline-block;
-        }
-
-        .logo-container {
+        
+        .logo {
           width: 80px;
           height: 80px;
-          background: linear-gradient(135deg, #10b981, #059669);
-          border-radius: 20px;
+          margin: 0 auto 20px;
+          background: linear-gradient(135deg, #4CAF50, #45A049);
+          border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 
-            0 20px 40px rgba(16, 185, 129, 0.3),
-            0 0 0 1px rgba(255, 255, 255, 0.1);
+          box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
           position: relative;
-          overflow: hidden;
+          animation: logoFloat 3s ease-in-out infinite;
         }
-
-        .logo-container::before {
-          content: '';
+        
+        @keyframes logoFloat {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-5px); }
+        }
+        
+        .logo svg {
+          width: 40px;
+          height: 40px;
+          filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+        
+        .logo-pulse {
           position: absolute;
-          inset: 0;
-          background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
-          border-radius: 20px;
+          top: -5px;
+          left: -5px;
+          right: -5px;
+          bottom: -5px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #4CAF50, #45A049);
+          opacity: 0.3;
+          animation: pulse 2s infinite;
         }
-
-        .logo-icon {
-          color: white;
-          position: relative;
-          z-index: 1;
+        
+        @keyframes pulse {
+          0% { transform: scale(1); opacity: 0.3; }
+          50% { transform: scale(1.1); opacity: 0.1; }
+          100% { transform: scale(1); opacity: 0.3; }
         }
-
-        .brand-text h1 {
-          margin: 0 0 8px 0;
-          font-size: 36px;
-          font-weight: 900;
-          color: #0f172a;
-          letter-spacing: -0.05em;
-          background: linear-gradient(135deg, #0f172a, #1e293b);
+        
+        .login-header h2 {
+          color: #2E7D32;
+          font-size: 32px;
+          margin-bottom: 10px;
+          font-weight: 700;
+          background: linear-gradient(135deg, #2E7D32, #4CAF50);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
         }
-
-        .tagline {
-          margin: 0;
-          font-size: 15px;
-          color: #64748b;
-          font-weight: 500;
-          letter-spacing: 0.025em;
-        }
-
-        .error-alert {
-          display: flex;
-          align-items: flex-start;
-          gap: 16px;
-          padding: 20px 24px;
-          background: linear-gradient(135deg, #fef2f2, #fee2e2);
-          border: 1px solid #fca5a5;
-          border-radius: 12px;
-          margin-bottom: 32px;
-          border-left: 4px solid #ef4444;
-          position: relative;
-          overflow: hidden;
-        }
-
-        .error-alert::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 1px;
-          background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.5), transparent);
-        }
-
-        .error-icon {
-          width: 24px;
-          height: 24px;
-          background: #ef4444;
-          color: white;
-          border-radius: 8px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-          box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-        }
-
-        .error-content {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-        }
-
-        .error-title {
-          font-size: 14px;
-          font-weight: 700;
-          color: #dc2626;
-          text-transform: uppercase;
-          letter-spacing: 0.025em;
-        }
-
-        .error-message {
-          font-size: 14px;
-          color: #991b1b;
-          font-weight: 500;
-        }
-
-        .login-form {
-          display: flex;
-          flex-direction: column;
-          gap: 28px;
-        }
-
-        .form-group {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-
-        .form-label {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          font-size: 14px;
-          font-weight: 700;
-          color: #374151;
-          letter-spacing: 0.025em;
-          text-transform: uppercase;
-        }
-
-        .label-text {
-          color: #374151;
-        }
-
-        .label-required {
-          color: #ef4444;
+        
+        .login-header p {
+          color: #558B2F;
           font-size: 16px;
+          margin-top: 0;
+          opacity: 0.8;
         }
-
-        .form-label-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .forgot-link {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 13px;
-          color: #10b981;
-          text-decoration: none;
-          font-weight: 600;
-          transition: all 0.2s ease;
-          padding: 8px 12px;
-          border-radius: 8px;
-          border: 1px solid transparent;
-        }
-
-        .forgot-link:hover {
-          color: #059669;
-          background: rgba(16, 185, 129, 0.1);
-          border-color: rgba(16, 185, 129, 0.2);
-        }
-
-        .input-wrapper {
+        
+        .form-group {
+          margin-bottom: 30px;
           position: relative;
           transition: all 0.3s ease;
         }
-
-        .input-wrapper.focused {
+        
+        .form-group.focused {
           transform: translateY(-2px);
         }
-
-        .input-prefix {
-          position: absolute;
-          left: 20px;
-          top: 50%;
-          transform: translateY(-50%);
-          color: #6b7280;
+        
+        .form-group label {
+          display: flex;
+          align-items: center;
+          margin-bottom: 12px;
+          color: #33691E;
+          font-size: 15px;
+          font-weight: 600;
           transition: all 0.3s ease;
-          z-index: 2;
         }
-
-        .input-wrapper.focused .input-prefix {
-          color: #10b981;
+        
+        .form-group.focused label {
+          color: #2E7D32;
+          transform: translateX(5px);
         }
-
-        .input-wrapper.error .input-prefix {
-          color: #ef4444;
+        
+        .form-group label svg {
+          width: 20px;
+          height: 20px;
+          margin-right: 10px;
+          opacity: 0.8;
+          transition: all 0.3s ease;
         }
-
-        .form-input {
+        
+        .form-group.focused label svg {
+          opacity: 1;
+          transform: scale(1.1);
+        }
+        
+        .input-wrapper {
+          position: relative;
+        }
+        
+        .form-group input {
           width: 100%;
-          padding: 20px 20px 20px 56px;
-          border: 2px solid #e5e7eb;
+          padding: 16px 18px;
+          border: 2px solid #E8F5E8;
           border-radius: 12px;
           font-size: 16px;
-          color: #1f2937;
-          background: #ffffff;
-          transition: all 0.3s ease;
-          outline: none;
-          font-weight: 500;
+          transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+          background: linear-gradient(135deg, #F8FFF8, #F1F8E9);
+          color: #33691E;
           position: relative;
-          z-index: 1;
         }
-
-        .input-wrapper.focused .form-input {
-          border-color: #10b981;
-          background: #f9fafb;
-          box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+        
+        .form-group input:focus {
+          border-color: #4CAF50;
+          box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.15);
+          outline: none;
+          background: #fff;
+          transform: translateY(-1px);
         }
-
-        .input-wrapper.error .form-input {
-          border-color: #ef4444;
-          background: #fef2f2;
-          box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+        
+        .form-group input::placeholder {
+          color: #A5D6A7;
+          transition: all 0.3s ease;
         }
-
-        .form-input:disabled {
-          background: #f3f4f6;
-          color: #6b7280;
-          cursor: not-allowed;
+        
+        .form-group.focused input::placeholder {
+          opacity: 0.7;
+          transform: translateX(5px);
         }
-
-        .input-border {
+        
+        .input-highlight {
           position: absolute;
           bottom: 0;
-          left: 0;
-          right: 0;
-          height: 2px;
-          background: linear-gradient(90deg, #10b981, #059669);
-          border-radius: 0 0 12px 12px;
-          transform: scaleX(0);
-          transition: transform 0.3s ease;
+          left: 50%;
+          width: 0;
+          height: 3px;
+          background: linear-gradient(135deg, #4CAF50, #45A049);
+          border-radius: 2px;
+          transition: all 0.3s ease;
+          transform: translateX(-50%);
         }
-
-        .input-wrapper.focused .input-border {
-          transform: scaleX(1);
+        
+        .form-group.focused .input-highlight {
+          width: 100%;
         }
-
-        .password-toggle {
+        
+        .password-input {
+          position: relative;
+        }
+        
+        .toggle-password {
           position: absolute;
-          right: 20px;
+          right: 15px;
           top: 50%;
           transform: translateY(-50%);
           background: none;
           border: none;
-          color: #6b7280;
           cursor: pointer;
           padding: 8px;
+          color: #558B2F;
           border-radius: 8px;
           transition: all 0.3s ease;
-          z-index: 2;
         }
-
-        .password-toggle:hover {
-          color: #10b981;
-          background: rgba(16, 185, 129, 0.1);
+        
+        .toggle-password:hover {
+          background: rgba(76, 175, 80, 0.1);
+          color: #2E7D32;
+          transform: translateY(-50%) scale(1.1);
         }
-
-        .password-toggle:disabled {
-          cursor: not-allowed;
-          opacity: 0.5;
+        
+        .eye-animation {
+          transition: all 0.3s ease;
         }
-
-        .error-text {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          font-size: 13px;
-          color: #ef4444;
-          font-weight: 600;
+        
+        .toggle-password:active .eye-animation {
+          transform: scale(0.9);
+        }
+        
+        .toggle-password svg {
+          width: 22px;
+          height: 22px;
+        }
+        
+        .password-strength {
           margin-top: 8px;
-          padding: 8px 12px;
-          background: rgba(239, 68, 68, 0.05);
-          border-radius: 8px;
-          border-left: 3px solid #ef4444;
+          opacity: 0;
+          animation: fadeIn 0.3s ease forwards;
         }
-
-        .submit-btn {
+        
+        @keyframes fadeIn {
+          to { opacity: 1; }
+        }
+        
+        .strength-bars {
+          display: flex;
+          gap: 4px;
+          height: 4px;
+        }
+        
+        .bar {
+          flex: 1;
+          background: #E0E0E0;
+          border-radius: 2px;
+          transition: all 0.3s ease;
+        }
+        
+        .bar.active {
+          background: linear-gradient(135deg, #4CAF50, #45A049);
+          transform: scaleY(1.2);
+        }
+        
+        .login-button {
           width: 100%;
-          padding: 0;
-          background: linear-gradient(135deg, #10b981, #059669);
+          padding: 18px;
+          background: linear-gradient(135deg, #4CAF50 0%, #45A049 50%, #2E7D32 100%);
           color: white;
           border: none;
           border-radius: 12px;
+          font-size: 17px;
+          font-weight: 700;
           cursor: pointer;
-          transition: all 0.3s ease;
-          margin-top: 8px;
+          transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+          margin-top: 20px;
           position: relative;
           overflow: hidden;
-          height: 64px;
-          box-shadow: 0 20px 40px rgba(16, 185, 129, 0.3);
+          box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
         }
-
-        .btn-content {
+        
+        .login-button:hover:not(:disabled) {
+          background: linear-gradient(135deg, #45A049 0%, #2E7D32 50%, #1B5E20 100%);
+          transform: translateY(-3px);
+          box-shadow: 0 12px 35px rgba(76, 175, 80, 0.4);
+        }
+        
+        .login-button:active:not(:disabled) {
+          transform: translateY(-1px);
+        }
+        
+        .login-button:disabled {
+          background: linear-gradient(135deg, #A5D6A7, #C8E6C9);
+          cursor: not-allowed;
+          transform: none;
+          box-shadow: none;
+        }
+        
+        .button-content {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 12px;
-          font-size: 16px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.025em;
-          height: 100%;
           position: relative;
           z-index: 2;
         }
-
-        .btn-shine {
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-          transition: left 0.5s ease;
+        
+        .button-content svg {
+          width: 22px;
+          height: 22px;
+          margin-right: 10px;
+          transition: all 0.3s ease;
         }
-
-        .submit-btn:hover:not(:disabled) {
-          transform: translateY(-2px);
-          box-shadow: 0 25px 50px rgba(16, 185, 129, 0.4);
-          background: linear-gradient(135deg, #059669, #047857);
+        
+        .login-button:hover:not(:disabled) .button-content svg {
+          transform: translateX(3px);
         }
-
-        .submit-btn:hover:not(:disabled) .btn-shine {
-          left: 100%;
-        }
-
-        .submit-btn:active:not(:disabled) {
-          transform: translateY(0);
-        }
-
-        .submit-btn:disabled {
-          opacity: 0.8;
-          cursor: not-allowed;
-          transform: none;
-        }
-
-        .spinner {
-          width: 20px;
-          height: 20px;
-          border: 2px solid rgba(255, 255, 255, 0.3);
-          border-top: 2px solid white;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-        }
-
-        .register-section {
-          margin-top: 32px;
-        }
-
-        .divider {
-          position: relative;
-          text-align: center;
-          margin-bottom: 24px;
-        }
-
-        .divider::before {
-          content: '';
+        
+        .button-ripple {
           position: absolute;
           top: 50%;
-          left: 0;
-          right: 0;
-          height: 1px;
-          background: linear-gradient(90deg, transparent, #e5e7eb, transparent);
+          left: 50%;
+          width: 0;
+          height: 0;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.3);
+          transform: translate(-50%, -50%);
+          transition: all 0.6s ease;
         }
-
-        .divider span {
-          background: rgba(255, 255, 255, 0.98);
-          padding: 0 24px;
-          font-size: 14px;
-          color: #6b7280;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
+        
+        .login-button:active:not(:disabled) .button-ripple {
+          width: 300px;
+          height: 300px;
         }
-
-        .register-card {
-          background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
-          border: 1px solid #a7f3d0;
-          border-radius: 16px;
-          padding: 32px;
-          position: relative;
-          overflow: hidden;
-          border-left: 4px solid #10b981;
-        }
-
-        .register-card::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 1px;
-          background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.5), transparent);
-        }
-
-        .register-content {
-          text-align: center;
-        }
-
-        .register-content h3 {
-          margin: 0 0 12px 0;
-          font-size: 20px;
-          font-weight: 800;
-          color: #0f172a;
-          letter-spacing: -0.025em;
-        }
-
-        .register-content p {
-          margin: 0 0 24px 0;
-          font-size: 15px;
-          color: #64748b;
-          font-weight: 500;
-          line-height: 1.6;
-        }
-
-        .register-link {
-          display: inline-flex;
-          align-items: center;
-          gap: 12px;
-          padding: 16px 32px;
-          background: linear-gradient(135deg, #10b981, #059669);
-          color: white;
-          text-decoration: none;
-          font-weight: 700;
-          border-radius: 12px;
-          transition: all 0.3s ease;
-          text-transform: uppercase;
-          font-size: 14px;
-          letter-spacing: 0.025em;
-          box-shadow: 0 12px 24px rgba(16, 185, 129, 0.3);
-          position: relative;
-          overflow: hidden;
-        }
-
-        .register-link::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-          transition: left 0.5s ease;
-        }
-
-        .register-link:hover {
-          background: linear-gradient(135deg, #059669, #047857);
-          transform: translateY(-2px);
-          box-shadow: 0 16px 32px rgba(16, 185, 129, 0.4);
-        }
-
-        .register-link:hover::before {
-          left: 100%;
-        }
-
-        .login-footer {
-          text-align: center;
-          color: rgba(255, 255, 255, 0.7);
-          font-size: 13px;
-          font-weight: 500;
-        }
-
-        .login-footer p {
-          margin: 0 0 12px 0;
-        }
-
-        .footer-links {
+        
+        .loading-state {
           display: flex;
+          align-items: center;
           justify-content: center;
-          gap: 24px;
-          flex-wrap: wrap;
+          gap: 12px;
         }
-
-        .footer-links a {
-          color: rgba(255, 255, 255, 0.8);
-          text-decoration: none;
-          font-weight: 600;
-          transition: all 0.2s ease;
-          padding: 4px 8px;
-          border-radius: 4px;
+        
+        .spinner-advanced {
+          width: 24px;
+          height: 24px;
+          border: 3px solid rgba(255, 255, 255, 0.3);
+          border-radius: 50%;
+          border-top-color: white;
+          animation: spin 1s linear infinite;
         }
-
-        .footer-links a:hover {
-          color: #10b981;
-          background: rgba(16, 185, 129, 0.1);
-        }
-
-        @keyframes float {
-          0%, 100% { 
-            transform: translateY(0px) rotate(0deg);
-            opacity: 0.4;
-          }
-          50% { 
-            transform: translateY(-20px) rotate(180deg);
-            opacity: 0.8;
-          }
-        }
-
-        @keyframes gridMove {
-          0% { transform: translate(0, 0); }
-          100% { transform: translate(50px, 50px); }
-        }
-
+        
         @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
+          to { transform: rotate(360deg); }
         }
-
-        @keyframes slideIn {
-          from {
-            transform: translateX(100%);
-            opacity: 0;
-          }
-          to {
-            transform: translateX(0);
-            opacity: 1;
-          }
+        
+        .error-message {
+          background: linear-gradient(135deg, #FFEBEE, #FFCDD2);
+          color: #C62828;
+          padding: 18px;
+          border-radius: 12px;
+          margin-bottom: 30px;
+          font-size: 15px;
+          display: flex;
+          align-items: center;
+          border-left: 5px solid #C62828;
+          box-shadow: 0 4px 12px rgba(198, 40, 40, 0.2);
         }
-
-        @keyframes pulse {
-          0%, 100% { 
-            opacity: 1;
-            transform: scale(1);
-          }
-          50% { 
-            opacity: 0.8;
-            transform: scale(1.05);
-          }
+        
+        .animate-shake {
+          animation: shake 0.5s ease-in-out;
         }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-          .login-container {
-            padding: 16px;
-          }
-
-          .login-card {
-            padding: 36px 28px;
-            border-radius: 20px;
-          }
-
-          .brand-text h1 {
-            font-size: 32px;
-          }
-
-          .tagline {
-            font-size: 14px;
-          }
-
-          .logo-container {
-            width: 72px;
-            height: 72px;
-          }
-
-          .form-input {
-            padding: 18px 18px 18px 52px;
-            font-size: 15px;
-          }
-
-          .submit-btn {
-            height: 60px;
-          }
-
-          .btn-content {
-            font-size: 15px;
-          }
-
-          .register-card {
-            padding: 28px 24px;
-          }
-
-          .footer-links {
-            gap: 16px;
-          }
+        
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
         }
-
+        
+        .error-message svg {
+          width: 22px;
+          height: 22px;
+          margin-right: 12px;
+          flex-shrink: 0;
+        }
+        
+        .forgot-password {
+          text-align: right;
+          margin-bottom: 25px;
+        }
+        
+        .forgot-password button {
+          background: none;
+          border: none;
+          color: #558B2F;
+          font-size: 14px;
+          cursor: pointer;
+          padding: 8px 12px;
+          border-radius: 8px;
+          transition: all 0.3s ease;
+          font-weight: 500;
+        }
+        
+        .forgot-password button:hover {
+          background: rgba(76, 175, 80, 0.1);
+          color: #2E7D32;
+          transform: translateX(-3px);
+        }
+        
+        .register-prompt {
+          text-align: center;
+          margin-top: 35px;
+        }
+        
+        .divider {
+          display: flex;
+          align-items: center;
+          margin: 30px 0;
+          color: #81C784;
+          font-size: 15px;
+          font-weight: 600;
+        }
+        
+        .divider::before,
+        .divider::after {
+          content: "";
+          flex: 1;
+          border-bottom: 2px solid #E8F5E8;
+        }
+        
+        .divider::before {
+          margin-right: 20px;
+        }
+        
+        .divider::after {
+          margin-left: 20px;
+        }
+        
+        .register-button {
+          width: 100%;
+          padding: 18px;
+          background: linear-gradient(135deg, #fff, #f8f9fa);
+          color: #2E7D32;
+          border: 2px solid #4CAF50;
+          border-radius: 12px;
+          font-size: 17px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+          position: relative;
+          overflow: hidden;
+          box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2);
+        }
+        
+        .register-button:hover {
+          background: linear-gradient(135deg, #F1F8E9, #E8F5E8);
+          border-color: #45A049;
+          transform: translateY(-3px);
+          box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+        }
+        
+        .register-button:active {
+          transform: translateY(-1px);
+        }
+        
+        .register-button .button-content svg {
+          width: 22px;
+          height: 22px;
+          margin-right: 10px;
+          transition: all 0.3s ease;
+        }
+        
+        .register-button:hover .button-content svg {
+          transform: rotate(90deg);
+        }
+        
         @media (max-width: 480px) {
-          .login-container {
-            padding: 12px;
+          .login-box {
+            padding: 30px;
+            margin: 10px;
           }
           
-          .login-card {
-            padding: 32px 24px;
-            border-radius: 16px;
-          }
-
-          .brand-text h1 {
+          .login-header h2 {
             font-size: 28px;
           }
-
-          .logo-container {
-            width: 64px;
-            height: 64px;
+          
+          .form-group input {
+            padding: 14px 16px;
           }
-
-          .form-input {
-            padding: 16px 16px 16px 48px;
-          }
-
-          .submit-btn {
-            height: 56px;
-          }
-
-          .register-card {
-            padding: 24px 20px;
-          }
-
-          .register-content h3 {
-            font-size: 18px;
-          }
-
-          .register-content p {
-            font-size: 14px;
-          }
-
-          .footer-links {
-            flex-direction: column;
-            gap: 8px;
-          }
-        }
-
-        /* Enhanced focus states for accessibility */
-        .form-input:focus-visible,
-        .password-toggle:focus-visible,
-        .forgot-link:focus-visible,
-        .register-link:focus-visible,
-        .submit-btn:focus-visible {
-          outline: 2px solid #10b981;
-          outline-offset: 2px;
-        }
-
-        /* Reduced motion for accessibility */
-        @media (prefers-reduced-motion: reduce) {
-          *,
-          *::before,
-          *::after {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.01ms !important;
-          }
-        }
-
-        /* High contrast mode support */
-        @media (prefers-contrast: high) {
-          .login-card {
-            border: 2px solid #000;
-            box-shadow: none;
-          }
-
-          .form-input {
-            border: 2px solid #000;
-          }
-
-          .submit-btn {
-            border: 2px solid #000;
+          
+          .floating-leaf {
+            font-size: 1.5rem;
           }
         }
       `}</style>
     </div>
   );
-}
+};
 
 export default Login;

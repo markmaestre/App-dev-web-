@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const farmDiarySchema = new mongoose.Schema({
+const FarmDiarySchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -8,22 +8,15 @@ const farmDiarySchema = new mongoose.Schema({
   },
   date: {
     type: Date,
-    default: Date.now
+    required: true
   },
-  activities: [String],
-  inputs: [{
-    type: {
-      type: String, // seed, fertilizer, pesticide
-      required: true
-    },
-    name: String,
-    quantity: String
-  }],
-  harvest: {
-    crop: String,
-    quantity: String,
-    notes: String
-  }
-}, { timestamps: true });
+  weather: String,
+  activities: String,
+  issues: String,
+  expenses: String,
+  notes: String,
+}, {
+  timestamps: true
+});
 
-module.exports = mongoose.model('FarmDiary', farmDiarySchema);
+module.exports = mongoose.model('FarmDiary', FarmDiarySchema);

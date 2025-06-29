@@ -6,6 +6,7 @@ import axios from 'axios';
 function UserDashboard() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
+  const token = localStorage.getItem('token');
   const [showModal, setShowModal] = useState(false);
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -16,7 +17,7 @@ function UserDashboard() {
     email: user?.email || '',
     address: user?.address || '',
     gender: user?.gender || '',
-    bod: user?.bod ? user.bod.split('T')[0] : '',
+    bod: user?.bod ? new Date(user.bod).toISOString().split('T')[0] : '',
   });
   const [profileImage, setProfileImage] = useState(null);
 
@@ -36,7 +37,6 @@ function UserDashboard() {
 
     if (!navigator.geolocation) {
       setLocationError('Geolocation is not supported by this browser.');
-     
       fetchWeatherByCity('Manila,PH');          
       fetchWeatherByCity('Quezon City,PH');  
       fetchWeatherByCity('Makati,PH');          
@@ -70,12 +70,12 @@ function UserDashboard() {
             break;
         }
         setLocationError(errorMessage);
-          fetchWeatherByCity('Manila,PH');          
-          fetchWeatherByCity('Quezon City,PH');  
-          fetchWeatherByCity('Makati,PH');          
-          fetchWeatherByCity('Pasig,PH');           
-          fetchWeatherByCity('Taguig,PH');        
-          fetchWeatherByCity('Mandaluyong,PH');   
+        fetchWeatherByCity('Manila,PH');          
+        fetchWeatherByCity('Quezon City,PH');  
+        fetchWeatherByCity('Makati,PH');          
+        fetchWeatherByCity('Pasig,PH');           
+        fetchWeatherByCity('Taguig,PH');        
+        fetchWeatherByCity('Mandaluyong,PH');   
       },
       {
         enableHighAccuracy: true,
@@ -88,7 +88,6 @@ function UserDashboard() {
   const fetchWeatherByCoordinates = async (lat, lon) => {
     try {
       setLoading(true);
-      
       const API_KEY = '14c7dc684b77a84d37ab9473fb19a1d5'; 
       const response = await axios.get(
         `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
@@ -96,7 +95,6 @@ function UserDashboard() {
       setWeather(response.data);
     } catch (error) {
       console.error('Error fetching weather by coordinates:', error);
-    
       try {
         const fallbackResponse = await axios.get(`https://wttr.in/${lat},${lon}?format=j1`);
         const data = fallbackResponse.data;
@@ -129,7 +127,6 @@ function UserDashboard() {
   const fetchWeatherByCity = async (city) => {
     try {
       setLoading(true);
-
       const API_KEY = '14c7dc684b77a84d37ab9473fb19a1d5'; 
       const response = await axios.get(
         `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`
@@ -137,7 +134,6 @@ function UserDashboard() {
       setWeather(response.data);
     } catch (error) {
       console.error('Error fetching weather by city:', error);
-      
       try {
         const fallbackResponse = await axios.get(`https://wttr.in/${city.replace(',', '+')}?format=j1`);
         const data = fallbackResponse.data;
@@ -168,6 +164,7 @@ function UserDashboard() {
 
   const handleLogout = () => {
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
     navigate('/login');
   };
 
@@ -186,25 +183,32 @@ function UserDashboard() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const form = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      if (value) form.append(key, value);
-    });
-    if (profileImage) form.append('profile', profileImage);
-
     try {
-      const res = await axios.put(`http://localhost:4000/api/users/${user._id}`, form, {
+      const form = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value) form.append(key, value);
+      });
+      if (profileImage) form.append('profile', profileImage);
+
+      const config = {
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
         }
-      });
+      };
+
+      const res = await axios.put('http://localhost:4000/api/users/profile', form, config);
+      
+      // Update local storage with new user data
+      const updatedUser = { ...user, ...res.data.user };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      
       alert('Profile updated successfully!');
-      localStorage.setItem('user', JSON.stringify(res.data));
       setShowModal(false);
       window.location.reload();
     } catch (err) {
       console.error(err);
-      alert('Failed to update profile');
+      alert(err.response?.data?.message || 'Failed to update profile');
     }
   };
 
@@ -246,7 +250,7 @@ function UserDashboard() {
           <div style={styles.profileImageContainer}>
             {user.profile ? (
               <img
-                src={user.profile}
+                src={`http://localhost:4000/uploads/${user.profile}`}
                 alt="Profile"
                 style={styles.profileImage}
               />
@@ -289,7 +293,7 @@ function UserDashboard() {
       <div style={styles.content}>
         <div style={styles.header}>
           <div>
-            <h1 style={styles.welcomeTitle}>Welcome back, {user.username}! 👋</h1>
+            <h1 style={styles.welcomeTitle}>Welcome back, {user.username}!</h1>
             <p style={styles.welcomeSubtitle}>Here's what's happening with your farm today</p>
           </div>
           <div style={styles.dateTime}>
@@ -435,6 +439,7 @@ function UserDashboard() {
                   onChange={handleChange} 
                   placeholder="Enter username"
                   style={styles.input}
+                  required
                 />
               </div>
               
@@ -447,6 +452,7 @@ function UserDashboard() {
                   onChange={handleChange} 
                   placeholder="Enter email"
                   style={styles.input}
+                  disabled
                 />
               </div>
               
@@ -464,7 +470,13 @@ function UserDashboard() {
               
               <div style={styles.inputGroup}>
                 <label style={styles.inputLabel}>Gender</label>
-                <select name="gender" value={formData.gender} onChange={handleChange} style={styles.select}>
+                <select 
+                  name="gender" 
+                  value={formData.gender} 
+                  onChange={handleChange} 
+                  style={styles.select}
+                  required
+                >
                   <option value="">Select Gender</option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
