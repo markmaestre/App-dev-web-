@@ -42,7 +42,7 @@ function UserDashboard() {
       fetchWeatherByCity('Makati,PH');          
       fetchWeatherByCity('Pasig,PH');           
       fetchWeatherByCity('Taguig,PH');        
-      fetchWeatherByCity('Mandaluyong,PH');   
+
       return;
     }
 
