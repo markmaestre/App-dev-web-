@@ -1,166 +1,642 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaHome, FaChartBar, FaFolderOpen, FaComments, FaEnvelope, FaCog, FaUser, FaCloudSun, FaThermometerHalf, FaEye, FaTint, FaWind } from 'react-icons/fa';
+import { useNavigate, NavLink } from 'react-router-dom';
 import axios from 'axios';
+import { 
+  User, 
+  Edit3, 
+  Cloud, 
+  TrendingUp, 
+  ShoppingCart, 
+  BookOpen, 
+  Bot, 
+  FileText, 
+  LogOut, 
+  Save, 
+  X,
+  Thermometer,
+  Droplets,
+  Wind,
+  CloudRain,
+  Lightbulb,
+  BarChart3,
+  Sprout,
+  DollarSign,
+  MapPin
+} from 'lucide-react';
 
-function UserDashboard() {
-  const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('user'));
-  const token = localStorage.getItem('token');
-  const [showModal, setShowModal] = useState(false);
-  const [weather, setWeather] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [location, setLocation] = useState(null);
-  const [locationError, setLocationError] = useState(null);
+const UserDashboard = () => {
+  const [user, setUser] = useState(null);
+  const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({
-    username: user?.username || '',
-    email: user?.email || '',
-    address: user?.address || '',
-    gender: user?.gender || '',
-    bod: user?.bod ? new Date(user.bod).toISOString().split('T')[0] : '',
+    username: '',
+    gender: '',
+    bod: '',
+    address: '',
+    profile: null,
   });
-  const [profileImage, setProfileImage] = useState(null);
+  const [weather, setWeather] = useState({
+    loading: true,
+    temp: null,
+    condition: '',
+    humidity: null,
+    wind: null,
+    precipitation: null,
+    location: ''
+  });
+  const [farmTips, setFarmTips] = useState([
+    "Check soil moisture before watering to conserve resources.",
+    "Rotate crops annually to maintain soil fertility.",
+    "Consider planting cover crops during off-seasons.",
+    "Monitor weather forecasts regularly for planting decisions."
+  ]);
+
+  const navigate = useNavigate();
+
+  // CSS Styles as JavaScript objects
+  const styles = {
+    container: {
+      display: 'flex',
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    },
+    sidebar: {
+      width: '18rem',
+      background: 'linear-gradient(180deg, #166534 0%, #14532d 100%)',
+      color: 'white',
+      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+      position: 'relative'
+    },
+    sidebarContent: {
+      padding: '1.5rem'
+    },
+    profileSection: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      marginBottom: '2rem',
+      padding: '1.5rem',
+      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      borderRadius: '1rem',
+      backdropFilter: 'blur(8px)'
+    },
+    profileImageContainer: {
+      position: 'relative',
+      marginBottom: '1rem'
+    },
+    profileImage: {
+      width: '5rem',
+      height: '5rem',
+      borderRadius: '50%',
+      objectFit: 'cover',
+      border: '4px solid white',
+      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)'
+    },
+    profilePlaceholder: {
+      width: '5rem',
+      height: '5rem',
+      background: 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)',
+      borderRadius: '50%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)'
+    },
+    profileStatus: {
+      position: 'absolute',
+      bottom: '-0.25rem',
+      right: '-0.25rem',
+      width: '1.5rem',
+      height: '1.5rem',
+      backgroundColor: '#4ade80',
+      borderRadius: '50%',
+      border: '2px solid white'
+    },
+    profileName: {
+      fontSize: '1.25rem',
+      fontWeight: 'bold',
+      marginBottom: '0.5rem',
+      textAlign: 'center'
+    },
+    editButton: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem',
+      padding: '0.5rem 1rem',
+      backgroundColor: '#16a34a',
+      color: 'white',
+      border: 'none',
+      borderRadius: '0.5rem',
+      cursor: 'pointer',
+      fontSize: '0.875rem',
+      fontWeight: '500',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      transition: 'all 0.2s ease',
+      transform: 'scale(1)'
+    },
+    editButtonHover: {
+      backgroundColor: '#15803d',
+      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
+      transform: 'scale(1.05)'
+    },
+    navigation: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '0.5rem'
+    },
+    navLink: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.75rem',
+      padding: '0.75rem 1rem',
+      borderRadius: '0.75rem',
+      textDecoration: 'none',
+      color: 'white',
+      transition: 'all 0.2s ease',
+      fontWeight: '500'
+    },
+    navLinkHover: {
+      backgroundColor: 'rgba(255, 255, 255, 0.1)'
+    },
+    navLinkActive: {
+      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+    },
+    logoutSection: {
+      padding: '1.5rem',
+      marginTop: 'auto',
+      position: 'absolute',
+      bottom: '0',
+      left: '0',
+      right: '0'
+    },
+    logoutButton: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem',
+      width: '100%',
+      padding: '0.75rem 1rem',
+      backgroundColor: '#dc2626',
+      color: 'white',
+      border: 'none',
+      borderRadius: '0.75rem',
+      cursor: 'pointer',
+      fontWeight: '500',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      transition: 'all 0.2s ease',
+      transform: 'scale(1)'
+    },
+    logoutButtonHover: {
+      backgroundColor: '#b91c1c',
+      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
+      transform: 'scale(1.05)'
+    },
+    mainContent: {
+      flex: 1,
+      padding: '2rem',
+      overflowY: 'auto'
+    },
+    editForm: {
+      maxWidth: '32rem',
+      margin: '0 auto'
+    },
+    editFormCard: {
+      backgroundColor: 'white',
+      borderRadius: '1.5rem',
+      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+      padding: '2rem'
+    },
+    editFormHeader: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.75rem',
+      marginBottom: '1.5rem'
+    },
+    editFormTitle: {
+      fontSize: '1.875rem',
+      fontWeight: 'bold',
+      color: '#1f2937'
+    },
+    formGroup: {
+      marginBottom: '1.5rem'
+    },
+    label: {
+      display: 'block',
+      fontSize: '0.875rem',
+      fontWeight: '500',
+      color: '#374151',
+      marginBottom: '0.5rem'
+    },
+    input: {
+      width: '100%',
+      padding: '0.75rem 1rem',
+      borderRadius: '0.75rem',
+      border: '2px solid #e5e7eb',
+      fontSize: '1rem',
+      transition: 'border-color 0.2s ease',
+      outline: 'none',
+      boxSizing: 'border-box'
+    },
+    inputFocus: {
+      borderColor: '#22c55e'
+    },
+    select: {
+      width: '100%',
+      padding: '0.75rem 1rem',
+      borderRadius: '0.75rem',
+      border: '2px solid #e5e7eb',
+      fontSize: '1rem',
+      transition: 'border-color 0.2s ease',
+      outline: 'none',
+      backgroundColor: 'white',
+      boxSizing: 'border-box'
+    },
+    fileInput: {
+      width: '100%',
+      padding: '0.75rem 1rem',
+      borderRadius: '0.75rem',
+      border: '2px solid #e5e7eb',
+      fontSize: '1rem',
+      transition: 'border-color 0.2s ease',
+      outline: 'none',
+      boxSizing: 'border-box'
+    },
+    buttonGroup: {
+      display: 'flex',
+      gap: '1rem',
+      marginTop: '2rem'
+    },
+    saveButton: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem',
+      padding: '0.75rem 1.5rem',
+      backgroundColor: '#16a34a',
+      color: 'white',
+      border: 'none',
+      borderRadius: '0.75rem',
+      cursor: 'pointer',
+      fontWeight: '500',
+      boxShadow: '0 10px 15px rgba(0, 0, 0, 0.1)',
+      transition: 'all 0.2s ease',
+      transform: 'scale(1)'
+    },
+    saveButtonHover: {
+      backgroundColor: '#15803d',
+      boxShadow: '0 20px 25px rgba(0, 0, 0, 0.15)',
+      transform: 'scale(1.05)'
+    },
+    cancelButton: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem',
+      padding: '0.75rem 1.5rem',
+      backgroundColor: '#6b7280',
+      color: 'white',
+      border: 'none',
+      borderRadius: '0.75rem',
+      cursor: 'pointer',
+      fontWeight: '500',
+      boxShadow: '0 10px 15px rgba(0, 0, 0, 0.1)',
+      transition: 'all 0.2s ease',
+      transform: 'scale(1)'
+    },
+    cancelButtonHover: {
+      backgroundColor: '#4b5563',
+      boxShadow: '0 20px 25px rgba(0, 0, 0, 0.15)',
+      transform: 'scale(1.05)'
+    },
+    dashboardContent: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '2rem'
+    },
+    welcomeHeader: {
+      textAlign: 'center',
+      marginBottom: '2rem'
+    },
+    welcomeTitle: {
+      fontSize: '2.25rem',
+      fontWeight: 'bold',
+      color: '#1f2937',
+      marginBottom: '0.5rem'
+    },
+    welcomeSubtitle: {
+      fontSize: '1.125rem',
+      color: '#6b7280'
+    },
+    card: {
+      backgroundColor: 'white',
+      borderRadius: '1.5rem',
+      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+      padding: '2rem',
+      overflow: 'hidden',
+      position: 'relative'
+    },
+    cardDecorative: {
+      position: 'absolute',
+      top: '0',
+      right: '0',
+      width: '16rem',
+      height: '16rem',
+      background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(34, 197, 94, 0.2) 100%)',
+      borderRadius: '50%',
+      transform: 'translate(8rem, -8rem)'
+    },
+    cardContent: {
+      position: 'relative',
+      zIndex: 10
+    },
+    cardHeader: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.75rem',
+      marginBottom: '1.5rem'
+    },
+    cardTitle: {
+      fontSize: '1.5rem',
+      fontWeight: 'bold',
+      color: '#1f2937'
+    },
+    locationInfo: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem',
+      marginBottom: '1.5rem'
+    },
+    locationText: {
+      color: '#6b7280',
+      fontWeight: '500'
+    },
+    loadingContainer: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '3rem 0'
+    },
+    loadingSpinner: {
+      animation: 'spin 1s linear infinite',
+      borderRadius: '50%',
+      height: '3rem',
+      width: '3rem',
+      borderWidth: '0 0 2px 0',
+      borderStyle: 'solid',
+      borderColor: '#3b82f6'
+    },
+    loadingText: {
+      marginLeft: '0.75rem',
+      color: '#6b7280'
+    },
+    weatherGrid: {
+      display: 'grid',
+      gridTemplateColumns: '1fr',
+      gap: '2rem'
+    },
+    weatherGridLarge: {
+      gridTemplateColumns: '1fr 1fr'
+    },
+    temperatureDisplay: {
+      textAlign: 'center'
+    },
+    temperature: {
+      fontSize: '3.75rem',
+      fontWeight: 'bold',
+      color: '#2563eb',
+      marginBottom: '0.5rem'
+    },
+    condition: {
+      fontSize: '1.25rem',
+      color: '#374151',
+      fontWeight: '500'
+    },
+    weatherStats: {
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: '1rem'
+    },
+    weatherStatCard: {
+      padding: '1rem',
+      borderRadius: '1rem'
+    },
+    weatherStatCardBlue: {
+      background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)'
+    },
+    weatherStatCardGreen: {
+      background: 'linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)'
+    },
+    weatherStatCardPurple: {
+      background: 'linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%)'
+    },
+    weatherStatCardOrange: {
+      background: 'linear-gradient(135deg, #fed7aa 0%, #fdba74 100%)'
+    },
+    weatherStatHeader: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem',
+      marginBottom: '0.5rem'
+    },
+    weatherStatLabel: {
+      fontSize: '0.875rem',
+      fontWeight: '500',
+      color: '#374151'
+    },
+    weatherStatValue: {
+      fontSize: '1.5rem',
+      fontWeight: 'bold'
+    },
+    weatherStatValueBlue: {
+      color: '#2563eb'
+    },
+    weatherStatValueGreen: {
+      color: '#16a34a'
+    },
+    weatherStatValuePurple: {
+      color: '#7c3aed'
+    },
+    weatherStatValueOrange: {
+      color: '#ea580c'
+    },
+    weatherAdvice: {
+      fontSize: '0.875rem',
+      fontWeight: '500',
+      color: '#ea580c'
+    },
+    gridTwoColumns: {
+      display: 'grid',
+      gridTemplateColumns: '1fr',
+      gap: '2rem'
+    },
+    gridTwoColumnsLarge: {
+      gridTemplateColumns: '1fr 1fr'
+    },
+    tipCard: {
+      background: 'linear-gradient(135deg, #fefce8 0%, #fef3c7 100%)',
+      padding: '1.5rem',
+      borderRadius: '1rem',
+      borderLeft: '4px solid #eab308'
+    },
+    tipText: {
+      color: '#374151',
+      fontWeight: '500',
+      lineHeight: '1.625'
+    },
+    statsContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '1rem'
+    },
+    statItem: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '1rem',
+      borderRadius: '1rem'
+    },
+    statItemGreen: {
+      background: 'linear-gradient(90deg, #dcfce7 0%, #bbf7d0 100%)'
+    },
+    statItemBlue: {
+      background: 'linear-gradient(90deg, #dbeafe 0%, #bfdbfe 100%)'
+    },
+    statItemPurple: {
+      background: 'linear-gradient(90deg, #f3e8ff 0%, #e9d5ff 100%)'
+    },
+    statItemLeft: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.75rem'
+    },
+    statIcon: {
+      width: '2.5rem',
+      height: '2.5rem',
+      borderRadius: '50%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    statIconGreen: {
+      backgroundColor: '#22c55e'
+    },
+    statIconBlue: {
+      backgroundColor: '#3b82f6'
+    },
+    statIconPurple: {
+      backgroundColor: '#8b5cf6'
+    },
+    statInfo: {
+      display: 'flex',
+      flexDirection: 'column'
+    },
+    statTitle: {
+      fontWeight: '500',
+      color: '#374151'
+    },
+    statSubtitle: {
+      fontSize: '0.875rem',
+      color: '#6b7280'
+    },
+    statValue: {
+      fontWeight: 'bold'
+    },
+    statValueGreen: {
+      color: '#16a34a'
+    },
+    statValueBlue: {
+      color: '#2563eb'
+    },
+    statValuePurple: {
+      color: '#7c3aed'
+    }
+  };
 
   useEffect(() => {
-    if (!user || user.role !== 'user') {
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
       navigate('/login');
-    }
-  }, [user, navigate]);
-
-  useEffect(() => {
-    getCurrentLocation();
-  }, []);
-
-  const getCurrentLocation = () => {
-    setLoading(true);
-    setLocationError(null);
-
-    if (!navigator.geolocation) {
-      setLocationError('Geolocation is not supported by this browser.');
-      fetchWeatherByCity('Manila,PH');          
-      fetchWeatherByCity('Quezon City,PH');  
-      fetchWeatherByCity('Makati,PH');          
-      fetchWeatherByCity('Pasig,PH');           
-      fetchWeatherByCity('Taguig,PH');        
-
-      return;
+    } else {
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+      setFormData({
+        username: parsedUser.username || '',
+        gender: parsedUser.gender || '',
+        bod: parsedUser.bod || '',
+        address: parsedUser.address || '',
+        profile: null
+      });
     }
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        setLocation({ lat: latitude, lon: longitude });
-        fetchWeatherByCoordinates(latitude, longitude);
-      },
-      (error) => {
-        console.error('Error getting location:', error);
-        let errorMessage;
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            errorMessage = 'Location access denied. Using default location.';
-            break;
-          case error.POSITION_UNAVAILABLE:
-            errorMessage = 'Location information unavailable. Using default location.';
-            break;
-          case error.TIMEOUT:
-            errorMessage = 'Location request timed out. Using default location.';
-            break;
-          default:
-            errorMessage = 'An error occurred while retrieving location. Using default location.';
-            break;
+    // Get user's location and fetch weather
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          try {
+            const weatherResponse = await axios.get(
+              `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m`
+            );
+            
+            const locationResponse = await axios.get(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+            );
+
+            const weatherCodeMap = {
+              0: 'Clear sky',
+              1: 'Mainly clear',
+              2: 'Partly cloudy',
+              3: 'Overcast',
+              45: 'Fog',
+              48: 'Depositing rime fog',
+              51: 'Light drizzle',
+              53: 'Moderate drizzle',
+              55: 'Dense drizzle',
+              56: 'Light freezing drizzle',
+              57: 'Dense freezing drizzle',
+              61: 'Slight rain',
+              63: 'Moderate rain',
+              65: 'Heavy rain',
+              66: 'Light freezing rain',
+              67: 'Heavy freezing rain',
+              71: 'Slight snow',
+              73: 'Moderate snow',
+              75: 'Heavy snow',
+              77: 'Snow grains',
+              80: 'Slight rain showers',
+              81: 'Moderate rain showers',
+              82: 'Violent rain showers',
+              85: 'Slight snow showers',
+              86: 'Heavy snow showers',
+              95: 'Thunderstorm',
+              96: 'Thunderstorm with hail',
+              99: 'Thunderstorm with heavy hail'
+            };
+
+            setWeather({
+              loading: false,
+              temp: weatherResponse.data.current.temperature_2m,
+              condition: weatherCodeMap[weatherResponse.data.current.weather_code] || 'Unknown',
+              humidity: weatherResponse.data.current.relative_humidity_2m,
+              wind: weatherResponse.data.current.wind_speed_10m,
+              precipitation: weatherResponse.data.current.precipitation,
+              location: locationResponse.data.address?.village || 
+                       locationResponse.data.address?.town || 
+                       locationResponse.data.address?.city || 
+                       'Your area'
+            });
+          } catch (error) {
+            console.error("Error fetching weather data:", error);
+            setWeather(prev => ({ ...prev, loading: false, location: 'Your area' }));
+          }
+        },
+        (error) => {
+          console.error("Geolocation error:", error);
+          setWeather(prev => ({ ...prev, loading: false, location: 'Your area' }));
         }
-        setLocationError(errorMessage);
-        fetchWeatherByCity('Manila,PH');          
-        fetchWeatherByCity('Quezon City,PH');  
-        fetchWeatherByCity('Makati,PH');          
-        fetchWeatherByCity('Pasig,PH');           
-        fetchWeatherByCity('Taguig,PH');        
-        fetchWeatherByCity('Mandaluyong,PH');   
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 300000 
-      }
-    );
-  };
-
-  const fetchWeatherByCoordinates = async (lat, lon) => {
-    try {
-      setLoading(true);
-      const API_KEY = '14c7dc684b77a84d37ab9473fb19a1d5'; 
-      const response = await axios.get(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
       );
-      setWeather(response.data);
-    } catch (error) {
-      console.error('Error fetching weather by coordinates:', error);
-      try {
-        const fallbackResponse = await axios.get(`https://wttr.in/${lat},${lon}?format=j1`);
-        const data = fallbackResponse.data;
-        setWeather({
-          name: data.nearest_area[0].areaName[0].value,
-          main: {
-            temp: parseInt(data.current_condition[0].temp_C),
-            feels_like: parseInt(data.current_condition[0].FeelsLikeC),
-            humidity: parseInt(data.current_condition[0].humidity)
-          },
-          weather: [{
-            main: data.current_condition[0].weatherDesc[0].value,
-            description: data.current_condition[0].weatherDesc[0].value.toLowerCase()
-          }],
-          wind: {
-            speed: parseInt(data.current_condition[0].windspeedKmph) / 3.6
-          },
-          visibility: parseInt(data.current_condition[0].visibility) * 1000,
-          coord: { lat, lon }
-        });
-      } catch (fallbackError) {
-        console.error('Fallback weather API also failed:', fallbackError);
-        setLocationError('Unable to fetch weather data');
-      }
-    } finally {
-      setLoading(false);
+    } else {
+      setWeather(prev => ({ ...prev, loading: false, location: 'Your area' }));
     }
-  };
-
-  const fetchWeatherByCity = async (city) => {
-    try {
-      setLoading(true);
-      const API_KEY = '14c7dc684b77a84d37ab9473fb19a1d5'; 
-      const response = await axios.get(
-        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`
-      );
-      setWeather(response.data);
-    } catch (error) {
-      console.error('Error fetching weather by city:', error);
-      try {
-        const fallbackResponse = await axios.get(`https://wttr.in/${city.replace(',', '+')}?format=j1`);
-        const data = fallbackResponse.data;
-        setWeather({
-          name: city.split(',')[0],
-          main: {
-            temp: parseInt(data.current_condition[0].temp_C),
-            feels_like: parseInt(data.current_condition[0].FeelsLikeC),
-            humidity: parseInt(data.current_condition[0].humidity)
-          },
-          weather: [{
-            main: data.current_condition[0].weatherDesc[0].value,
-            description: data.current_condition[0].weatherDesc[0].value.toLowerCase()
-          }],
-          wind: {
-            speed: parseInt(data.current_condition[0].windspeedKmph) / 3.6
-          },
-          visibility: parseInt(data.current_condition[0].visibility) * 1000
-        });
-      } catch (fallbackError) {
-        console.error('Fallback weather API also failed:', fallbackError);
-        setLocationError('Unable to fetch weather data');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -168,756 +644,421 @@ function UserDashboard() {
     navigate('/login');
   };
 
-  const handleEditProfile = () => {
-    setShowModal(true);
+  const handleInputChange = (e) => {
+    const { name, value, files } = e.target;
+    if (name === 'profile') {
+      setFormData((prev) => ({ ...prev, profile: files[0] }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const handleUpdate = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return alert('Unauthorized');
 
-  const handleFileChange = (e) => {
-    setProfileImage(e.target.files[0]);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    const data = new FormData();
+    data.append('username', formData.username);
+    data.append('gender', formData.gender);
+    data.append('bod', formData.bod);
+    data.append('address', formData.address);
+    if (formData.profile) {
+      data.append('profile', formData.profile);
+    }
 
     try {
-      const form = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        if (value) form.append(key, value);
-      });
-      if (profileImage) form.append('profile', profileImage);
-
-      const config = {
+      const res = await axios.put('http://localhost:4000/api/users/profile', data, {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
-        }
-      };
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
-      const res = await axios.put('http://localhost:4000/api/users/profile', form, config);
-      
-      // Update local storage with new user data
-      const updatedUser = { ...user, ...res.data.user };
-      localStorage.setItem('user', JSON.stringify(updatedUser));
-      
-      alert('Profile updated successfully!');
-      setShowModal(false);
-      window.location.reload();
+      alert('Profile updated!');
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+      setUser(res.data.user);
+      setEditing(false);
     } catch (err) {
       console.error(err);
-      alert(err.response?.data?.message || 'Failed to update profile');
+      alert('Failed to update profile.');
     }
+  };
+
+  const getRandomTip = () => {
+    return farmTips[Math.floor(Math.random() * farmTips.length)];
   };
 
   const navItems = [
-    { icon: <FaHome />, label: 'Dashboard', route: '/user-dashboard' },
-    { icon: <FaChartBar />, label: 'Crop Guide Hub', route: '/crop-guide' },
-    { icon: <FaFolderOpen />, label: 'Market Link', route: '/market-link' },
-    { icon: <FaComments />, label: 'Farm Diary', route: '/farm-diary' },
-    { icon: <FaEnvelope />, label: 'eLearning', route: '/elearning' },
-    { icon: <FaCog />, label: 'Edit Profile', route: '/user-dashboard', action: handleEditProfile }
+    { to: "/weather", icon: Cloud, label: "Weather" },
+    { to: "/prediction", icon: TrendingUp, label: "Crop Prediction" },
+    { to: "/market", icon: ShoppingCart, label: "Market Connection" },
+    { to: "/records", icon: FileText, label: "Farm Records" },
+    { to: "/learning", icon: BookOpen, label: "Agricultural Learning" },
+    { to: "/assistant", icon: Bot, label: "Farm Assistant" },
   ];
 
-  const getWeatherIcon = (weatherMain) => {
-    switch (weatherMain?.toLowerCase()) {
-      case 'clear':
-        return '☀️';
-      case 'clouds':
-        return '☁️';
-      case 'rain':
-        return '🌧️';
-      case 'thunderstorm':
-        return '⛈️';
-      case 'snow':
-        return '❄️';
-      case 'mist':
-      case 'haze':
-        return '🌫️';
-      default:
-        return '🌤️';
-    }
-  };
-
-  if (!user || user.role !== 'user') return null;
-
   return (
-    <div style={styles.wrapper}>
-      <div style={styles.sidebar}>
-        <div style={styles.profileSection}>
-          <div style={styles.profileImageContainer}>
-            {user.profile ? (
-              <img
-                src={`http://localhost:4000/uploads/${user.profile}`}
-                alt="Profile"
-                style={styles.profileImage}
-              />
-            ) : (
-              <div style={styles.defaultAvatar}>
-                <FaUser size={35} color="#fff" />
+    <>
+      <style>
+        {`
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+          
+          .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+          }
+          
+          .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          }
+          
+          .edit-button:hover {
+            background-color: #15803d;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transform: scale(1.05);
+          }
+          
+          .logout-button:hover {
+            background-color: #b91c1c;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transform: scale(1.05);
+          }
+          
+          .save-button:hover {
+            background-color: #15803d;
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+            transform: scale(1.05);
+          }
+          
+          .cancel-button:hover {
+            background-color: #4b5563;
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+            transform: scale(1.05);
+          }
+          
+          .input-field:focus {
+            border-color: #22c55e;
+          }
+          
+          @media (min-width: 1024px) {
+            .weather-grid {
+              grid-template-columns: 1fr 1fr;
+            }
+            .grid-two-columns {
+              grid-template-columns: 1fr 1fr;
+            }
+          }
+        `}
+      </style>
+      
+      <div style={styles.container}>
+        {/* Sidebar */}
+        <div style={styles.sidebar}>
+          <div style={styles.sidebarContent}>
+            {/* Profile Section */}
+            <div style={styles.profileSection}>
+              <div style={styles.profileImageContainer}>
+                {user?.profile ? (
+                  <img 
+                    src={user.profile} 
+                    alt="Profile" 
+                    style={styles.profileImage}
+                  />
+                ) : (
+                  <div style={styles.profilePlaceholder}>
+                    <User size={40} color="white" />
+                  </div>
+                )}
+                <div style={styles.profileStatus}></div>
               </div>
-            )}
-          </div>
-          <div style={styles.userInfo}>
-            <div style={styles.username}>{user.username}</div>
-            <div style={styles.status}>
-              <div style={styles.onlineIndicator}></div>
-              Online
-            </div>
-          </div>
-        </div>
-
-        <nav style={styles.navList}>
-          {navItems.map((item, index) => (
-            <div
-              key={index}
-              style={{
-                ...styles.navItem,
-                ...(window.location.pathname === item.route ? styles.activeItem : {})
-              }}
-              onClick={() => item.action ? item.action() : navigate(item.route)}
-            >
-              <span style={styles.icon}>{item.icon}</span>
-              <span style={styles.label}>{item.label}</span>
-            </div>
-          ))}
-        </nav>
-
-        <button onClick={handleLogout} style={styles.logoutBtn}>
-          <span>Logout</span>
-        </button>
-      </div>
-
-      <div style={styles.content}>
-        <div style={styles.header}>
-          <div>
-            <h1 style={styles.welcomeTitle}>Welcome back, {user.username}!</h1>
-            <p style={styles.welcomeSubtitle}>Here's what's happening with your farm today</p>
-          </div>
-          <div style={styles.dateTime}>
-            {new Date().toLocaleDateString('en-US', { 
-              weekday: 'long', 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            })}
-          </div>
-        </div>
-
-        <div style={styles.contentGrid}>
-          <div style={styles.quickActions}>
-            <h3 style={styles.sectionTitle}>Quick Actions</h3>
-            <div style={styles.actionGrid}>
-              <div style={styles.actionCard} onClick={() => navigate('/crop-guide')}>
-                <FaChartBar size={24} color="#4CAF50" />
-                <span>Crop Guide</span>
-              </div>
-              <div style={styles.actionCard} onClick={() => navigate('/market-link')}>
-                <FaFolderOpen size={24} color="#FF9800" />
-                <span>Market Link</span>
-              </div>
-              <div style={styles.actionCard} onClick={() => navigate('/farm-diary')}>
-                <FaComments size={24} color="#2196F3" />
-                <span>Farm Diary</span>
-              </div>
-              <div style={styles.actionCard} onClick={() => navigate('/elearning')}>
-                <FaEnvelope size={24} color="#9C27B0" />
-                <span>eLearning</span>
-              </div>
-            </div>
-          </div>
-
-          <div style={styles.weatherWidget}>
-            <div style={styles.weatherHeader}>
-              <h3 style={styles.sectionTitle}>
-                <FaCloudSun style={{ marginRight: '8px' }} />
-                Weather at Your Location
-              </h3>
+              <h3 style={styles.profileName}>{user?.username || 'Farmer'}</h3>
               <button 
-                onClick={getCurrentLocation} 
-                style={styles.refreshButton}
-                title="Refresh location and weather"
+                className="edit-button"
+                style={styles.editButton}
+                onClick={() => setEditing(true)}
               >
-                🔄
+                <Edit3 size={16} />
+                Edit Profile
               </button>
             </div>
             
-            {locationError && (
-              <div style={styles.locationAlert}>
-                <span style={styles.alertIcon}>⚠️</span>
-                <span>{locationError}</span>
-              </div>
-            )}
-            
-            {loading ? (
-              <div style={styles.loadingSpinner}>
-                <div style={styles.spinner}></div>
-                <p>Getting your location and weather...</p>
-              </div>
-            ) : weather ? (
-              <div style={styles.weatherContent}>
-                <div style={styles.weatherMain}>
-                  <div style={styles.weatherIcon}>
-                    {getWeatherIcon(weather.weather?.[0]?.main)}
+            {/* Navigation */}
+            <nav style={styles.navigation}>
+              {navItems.map((item) => (
+                <NavLink 
+                  key={item.to}
+                  to={item.to} 
+                  className="nav-link"
+                  style={styles.navLink}
+                >
+                  <item.icon size={20} />
+                  <span>{item.label}</span>
+                </NavLink>
+              ))}
+            </nav>
+          </div>
+          
+          {/* Logout Button */}
+          <div style={styles.logoutSection}>
+            <button 
+              className="logout-button"
+              style={styles.logoutButton}
+              onClick={handleLogout}
+            >
+              <LogOut size={20} />
+              Logout
+            </button>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div style={styles.mainContent}>
+          {editing ? (
+            <div style={styles.editForm}>
+              <div style={styles.editFormCard}>
+                <div style={styles.editFormHeader}>
+                  <Edit3 size={32} color="#16a34a" />
+                  <h2 style={styles.editFormTitle}>Edit Profile</h2>
+                </div>
+                
+                <div>
+                  <div style={styles.formGroup}>
+                    <label style={styles.label}>Username</label>
+                    <input 
+                      type="text" 
+                      name="username" 
+                      placeholder="Enter your username" 
+                      value={formData.username} 
+                      onChange={handleInputChange} 
+                      className="input-field"
+                      style={styles.input}
+                    />
                   </div>
-                  <div style={styles.weatherTemp}>
-                    <span style={styles.temperature}>{Math.round(weather.main?.temp || 0)}°C</span>
-                    <span style={styles.weatherDesc}>
-                      {weather.weather?.[0]?.description || 'Clear sky'}
-                    </span>
-                    <span style={styles.location}>
-                      📍 {weather.name || 'Your Location'}
-                      {location && (
-                        <small style={styles.coordinates}>
-                          ({location.lat.toFixed(4)}, {location.lon.toFixed(4)})
-                        </small>
-                      )}
-                    </span>
+                  
+                  <div style={styles.formGroup}>
+                    <label style={styles.label}>Gender</label>
+                    <select 
+                      name="gender" 
+                      value={formData.gender} 
+                      onChange={handleInputChange} 
+                      className="input-field"
+                      style={styles.select}
+                    >
+                      <option value="">Select gender</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  
+                  <div style={styles.formGroup}>
+                    <label style={styles.label}>Birth Date</label>
+                    <input 
+                      type="date" 
+                      name="bod" 
+                      value={formData.bod} 
+                      onChange={handleInputChange} 
+                      className="input-field"
+                      style={styles.input}
+                    />
+                  </div>
+                  
+                  <div style={styles.formGroup}>
+                    <label style={styles.label}>Address</label>
+                    <input 
+                      type="text" 
+                      name="address" 
+                      placeholder="Enter your address" 
+                      value={formData.address} 
+                      onChange={handleInputChange} 
+                      className="input-field"
+                      style={styles.input}
+                    />
+                  </div>
+                  
+                  <div style={styles.formGroup}>
+                    <label style={styles.label}>Profile Picture</label>
+                    <input 
+                      type="file" 
+                      name="profile" 
+                      onChange={handleInputChange} 
+                      className="input-field"
+                      style={styles.fileInput}
+                    />
                   </div>
                 </div>
                 
-                <div style={styles.weatherDetails}>
-                  <div style={styles.weatherItem}>
-                    <FaThermometerHalf color="#FF6B6B" />
-                    <span>Feels like</span>
-                    <strong>{Math.round(weather.main?.feels_like || 0)}°C</strong>
-                  </div>
-                  <div style={styles.weatherItem}>
-                    <FaTint color="#4ECDC4" />
-                    <span>Humidity</span>
-                    <strong>{weather.main?.humidity || 0}%</strong>
-                  </div>
-                  <div style={styles.weatherItem}>
-                    <FaWind color="#95A5A6" />
-                    <span>Wind Speed</span>
-                    <strong>{Math.round((weather.wind?.speed || 0) * 3.6)} km/h</strong>
-                  </div>
-                  <div style={styles.weatherItem}>
-                    <FaEye color="#3498DB" />
-                    <span>Visibility</span>
-                    <strong>{Math.round((weather.visibility || 0) / 1000)} km</strong>
-                  </div>
+                <div style={styles.buttonGroup}>
+                  <button 
+                    className="save-button"
+                    style={styles.saveButton}
+                    onClick={handleUpdate}
+                  >
+                    <Save size={20} />
+                    Save Changes
+                  </button>
+                  <button 
+                    className="cancel-button"
+                    style={styles.cancelButton}
+                    onClick={() => setEditing(false)}
+                  >
+                    <X size={20} />
+                    Cancel
+                  </button>
                 </div>
+              </div>
+            </div>
+          ) : (
+            <div style={styles.dashboardContent}>
+              {/* Welcome Header */}
+              <div style={styles.welcomeHeader}>
+                <h1 style={styles.welcomeTitle}>
+                  Welcome back, {user?.username || 'Farmer'}! 🌱
+                </h1>
+                <p style={styles.welcomeSubtitle}>Here's your farm dashboard overview</p>
+              </div>
 
-                <div style={styles.weatherAdvice}>
-                  <h4>Farming Advice</h4>
-                  <p>
-                    {weather.main?.temp > 30 
-                      ? "🌡️ Hot day ahead! Consider watering your crops early morning or evening."
-                      : weather.main?.temp < 15
-                      ? "🧊 Cool weather. Perfect for cool-season crops like lettuce and spinach."
-                      : "🌱 Great weather for most farming activities. Perfect day to tend your crops!"
-                    }
-                  </p>
+              {/* Weather Card */}
+              <div style={styles.card}>
+                <div style={styles.cardDecorative}></div>
+                
+                <div style={styles.cardContent}>
+                  <div style={styles.cardHeader}>
+                    <Cloud size={32} color="#3b82f6" />
+                    <h3 style={styles.cardTitle}>Farm Weather Forecast</h3>
+                  </div>
+                  
+                  <div style={styles.locationInfo}>
+                    <MapPin size={20} color="#6b7280" />
+                    <span style={styles.locationText}>{weather.location}</span>
+                  </div>
+                  
+                  {weather.loading ? (
+                    <div style={styles.loadingContainer}>
+                      <div style={styles.loadingSpinner}></div>
+                      <span style={styles.loadingText}>Loading weather data...</span>
+                    </div>
+                  ) : (
+                    <div className="weather-grid" style={styles.weatherGrid}>
+                      <div style={styles.temperatureDisplay}>
+                        <div style={styles.temperature}>{weather.temp}°C</div>
+                        <div style={styles.condition}>{weather.condition}</div>
+                      </div>
+                      
+                      <div style={styles.weatherStats}>
+                        <div style={{...styles.weatherStatCard, ...styles.weatherStatCardBlue}}>
+                          <div style={styles.weatherStatHeader}>
+                            <Droplets size={20} color="#3b82f6" />
+                            <span style={styles.weatherStatLabel}>Humidity</span>
+                          </div>
+                          <div style={{...styles.weatherStatValue, ...styles.weatherStatValueBlue}}>{weather.humidity}%</div>
+                        </div>
+                        
+                        <div style={{...styles.weatherStatCard, ...styles.weatherStatCardGreen}}>
+                          <div style={styles.weatherStatHeader}>
+                            <Wind size={20} color="#16a34a" />
+                            <span style={styles.weatherStatLabel}>Wind Speed</span>
+                          </div>
+                          <div style={{...styles.weatherStatValue, ...styles.weatherStatValueGreen}}>{weather.wind} km/h</div>
+                        </div>
+                        
+                        <div style={{...styles.weatherStatCard, ...styles.weatherStatCardPurple}}>
+                          <div style={styles.weatherStatHeader}>
+                            <CloudRain size={20} color="#7c3aed" />
+                            <span style={styles.weatherStatLabel}>Precipitation</span>
+                          </div>
+                          <div style={{...styles.weatherStatValue, ...styles.weatherStatValuePurple}}>{weather.precipitation} mm</div>
+                        </div>
+                        
+                        <div style={{...styles.weatherStatCard, ...styles.weatherStatCardOrange}}>
+                          <div style={styles.weatherStatHeader}>
+                            <Thermometer size={20} color="#ea580c" />
+                            <span style={styles.weatherStatLabel}>Farm Advice</span>
+                          </div>
+                          <div style={styles.weatherAdvice}>
+                            {weather.condition.includes('rain') ? 
+                              "Good for planting" : 
+                              "Consider irrigation"}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
-            ) : (
-              <div style={styles.weatherError}>
-                <p>Unable to load weather data for your location</p>
-                <button onClick={getCurrentLocation} style={styles.retryButton}>
-                  Try Again
-                </button>
+              
+              {/* Farm Tips and Stats */}
+              <div className="grid-two-columns" style={styles.gridTwoColumns}>
+                {/* Farm Tips */}
+                <div style={styles.card}>
+                  <div style={styles.cardHeader}>
+                    <Lightbulb size={32} color="#eab308" />
+                    <h3 style={styles.cardTitle}>Today's Farming Tip</h3>
+                  </div>
+                  
+                  <div style={styles.tipCard}>
+                    <p style={styles.tipText}>{getRandomTip()}</p>
+                  </div>
+                </div>
+                
+                {/* Quick Stats */}
+                <div style={styles.card}>
+                  <div style={styles.cardHeader}>
+                    <BarChart3 size={32} color="#16a34a" />
+                    <h3 style={styles.cardTitle}>Farm Overview</h3>
+                  </div>
+                  
+                  <div style={styles.statsContainer}>
+                    <div style={{...styles.statItem, ...styles.statItemGreen}}>
+                      <div style={styles.statItemLeft}>
+                        <div style={{...styles.statIcon, ...styles.statIconGreen}}>
+                          <Sprout size={20} color="white" />
+                        </div>
+                        <div style={styles.statInfo}>
+                          <div style={styles.statTitle}>Soil Quality</div>
+                          <div style={styles.statSubtitle}>Current Status</div>
+                        </div>
+                      </div>
+                      <div style={{...styles.statValue, ...styles.statValueGreen}}>Optimal</div>
+                    </div>
+                    
+                    <div style={{...styles.statItem, ...styles.statItemBlue}}>
+                      <div style={styles.statItemLeft}>
+                        <div style={{...styles.statIcon, ...styles.statIconBlue}}>
+                          <TrendingUp size={20} color="white" />
+                        </div>
+                        <div style={styles.statInfo}>
+                          <div style={styles.statTitle}>Planting Season</div>
+                          <div style={styles.statSubtitle}>Best for</div>
+                        </div>
+                      </div>
+                      <div style={{...styles.statValue, ...styles.statValueBlue}}>Tomatoes</div>
+                    </div>
+                    
+                    <div style={{...styles.statItem, ...styles.statItemPurple}}>
+                      <div style={styles.statItemLeft}>
+                        <div style={{...styles.statIcon, ...styles.statIconPurple}}>
+                          <DollarSign size={20} color="white" />
+                        </div>
+                        <div style={styles.statInfo}>
+                          <div style={styles.statTitle}>Market Prices</div>
+                          <div style={styles.statSubtitle}>Rice per kg</div>
+                        </div>
+                      </div>
+                      <div style={{...styles.statValue, ...styles.statValuePurple}}>₱25</div>
+                    </div>
+                  </div>
+                </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
-
-      {showModal && (
-        <div style={styles.modalOverlay}>
-          <div style={styles.modal}>
-            <h2 style={styles.modalTitle}>Edit Profile</h2>
-            <form onSubmit={handleSubmit} encType="multipart/form-data" style={styles.modalForm}>
-              <div style={styles.inputGroup}>
-                <label style={styles.inputLabel}>Username</label>
-                <input 
-                  type="text" 
-                  name="username" 
-                  value={formData.username} 
-                  onChange={handleChange} 
-                  placeholder="Enter username"
-                  style={styles.input}
-                  required
-                />
-              </div>
-              
-              <div style={styles.inputGroup}>
-                <label style={styles.inputLabel}>Email</label>
-                <input 
-                  type="email" 
-                  name="email" 
-                  value={formData.email} 
-                  onChange={handleChange} 
-                  placeholder="Enter email"
-                  style={styles.input}
-                  disabled
-                />
-              </div>
-              
-              <div style={styles.inputGroup}>
-                <label style={styles.inputLabel}>Address</label>
-                <input 
-                  type="text" 
-                  name="address" 
-                  value={formData.address} 
-                  onChange={handleChange} 
-                  placeholder="Enter address"
-                  style={styles.input}
-                />
-              </div>
-              
-              <div style={styles.inputGroup}>
-                <label style={styles.inputLabel}>Gender</label>
-                <select 
-                  name="gender" 
-                  value={formData.gender} 
-                  onChange={handleChange} 
-                  style={styles.select}
-                  required
-                >
-                  <option value="">Select Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-              
-              <div style={styles.inputGroup}>
-                <label style={styles.inputLabel}>Date of Birth</label>
-                <input 
-                  type="date" 
-                  name="bod" 
-                  value={formData.bod} 
-                  onChange={handleChange}
-                  style={styles.input}
-                />
-              </div>
-              
-              <div style={styles.inputGroup}>
-                <label style={styles.inputLabel}>Profile Picture</label>
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  onChange={handleFileChange}
-                  style={styles.fileInput}
-                />
-              </div>
-              
-              <div style={styles.modalButtons}>
-                <button type="submit" style={styles.saveButton}>Save Changes</button>
-                <button type="button" onClick={() => setShowModal(false)} style={styles.cancelButton}>
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
+    </>
   );
-}
-
-const styles = {
-  wrapper: { 
-    display: 'flex', 
-    height: '100vh', 
-    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-    backgroundColor: '#f5f7fa'
-  },
-  sidebar: {
-    width: '280px', 
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    color: '#fff',
-    display: 'flex', 
-    flexDirection: 'column',
-    boxShadow: '2px 0 10px rgba(0,0,0,0.1)',
-    paddingTop: '30px'
-  },
-  profileSection: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    marginBottom: '40px',
-    padding: '0 20px'
-  },
-  profileImageContainer: {
-    position: 'relative',
-    marginBottom: '15px'
-  },
-  profileImage: {
-    width: '80px', 
-    height: '80px', 
-    borderRadius: '50%', 
-    objectFit: 'cover',
-    border: '3px solid rgba(255,255,255,0.3)',
-    boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
-  },
-  defaultAvatar: {
-    width: '80px',
-    height: '80px',
-    borderRadius: '50%',
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    border: '3px solid rgba(255,255,255,0.3)'
-  },
-  userInfo: {
-    textAlign: 'center'
-  },
-  username: {
-    fontSize: '18px',
-    fontWeight: '600',
-    marginBottom: '5px'
-  },
-  status: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '12px',
-    color: 'rgba(255,255,255,0.8)'
-  },
-  onlineIndicator: {
-    width: '8px',
-    height: '8px',
-    backgroundColor: '#4CAF50',
-    borderRadius: '50%',
-    marginRight: '6px'
-  },
-  navList: {
-    width: '100%',
-    flex: 1,
-    padding: '0 15px'
-  },
-  navItem: {
-    display: 'flex', 
-    alignItems: 'center', 
-    padding: '15px 20px',
-    cursor: 'pointer', 
-    transition: 'all 0.3s ease', 
-    color: 'rgba(255,255,255,0.8)',
-    borderRadius: '12px',
-    margin: '5px 0',
-    position: 'relative'
-  },
-  activeItem: {
-    backgroundColor: 'rgba(255,255,255,0.2)', 
-    color: '#fff',
-    transform: 'translateX(5px)',
-    boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
-  },
-  icon: { 
-    marginRight: '15px',
-    fontSize: '16px'
-  },
-  label: { 
-    fontSize: '14px',
-    fontWeight: '500'
-  },
-  logoutBtn: {
-    margin: '20px 35px',
-    padding: '12px 20px',
-    background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '25px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: '600',
-    transition: 'all 0.3s ease',
-    boxShadow: '0 4px 15px rgba(238, 90, 36, 0.3)'
-  },
-  content: { 
-    flex: 1, 
-    padding: '30px 40px',
-    backgroundColor: '#f8fafc',
-    overflow: 'auto'
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: '30px',
-    paddingBottom: '20px',
-    borderBottom: '1px solid #e2e8f0'
-  },
-  welcomeTitle: {
-    fontSize: '32px',
-    fontWeight: '700',
-    color: '#2d3748',
-    margin: '0 0 8px 0'
-  },
-  welcomeSubtitle: {
-    fontSize: '16px',
-    color: '#718096',
-    margin: 0
-  },
-  dateTime: {
-    fontSize: '14px',
-    color: '#a0aec0',
-    fontWeight: '500'
-  },
-  contentGrid: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '30px',
-    height: 'calc(100vh - 200px)'
-  },
-  quickActions: {
-    backgroundColor: '#fff',
-    borderRadius: '16px',
-    padding: '25px',
-    boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-    border: '1px solid #e2e8f0'
-  },
-  sectionTitle: {
-    fontSize: '20px',
-    fontWeight: '600',
-    color: '#2d3748',
-    marginBottom: '20px',
-    display: 'flex',
-    alignItems: 'center'
-  },
-  actionGrid: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '15px'
-  },
-  actionCard: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    padding: '20px 15px',
-    backgroundColor: '#f7fafc',
-    borderRadius: '12px',
-    cursor: 'pointer',
-    transition: 'all 0.3s ease',
-    border: '1px solid #e2e8f0'
-  },
-  weatherWidget: {
-    backgroundColor: '#fff',
-    borderRadius: '16px',
-    padding: '25px',
-    boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-    border: '1px solid #e2e8f0',
-    height: 'fit-content'
-  },
-  loadingSpinner: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    padding: '40px 0'
-  },
-  spinner: {
-    width: '30px',
-    height: '30px',
-    border: '3px solid #f3f3f3',
-    borderTop: '3px solid #3498db',
-    borderRadius: '50%',
-    animation: 'spin 1s linear infinite'
-  },
-  weatherHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '20px'
-  },
-  refreshButton: {
-    background: 'none',
-    border: 'none',
-    fontSize: '18px',
-    cursor: 'pointer',
-    padding: '5px',
-    borderRadius: '50%',
-    transition: 'background-color 0.3s ease'
-  },
-  locationAlert: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    padding: '10px 15px',
-    backgroundColor: '#fff3cd',
-    border: '1px solid #ffeaa7',
-    borderRadius: '8px',
-    marginBottom: '15px',
-    fontSize: '14px',
-    color: '#856404'
-  },
-  alertIcon: {
-    fontSize: '16px'
-  },
-  coordinates: {
-    display: 'block',
-    fontSize: '11px',
-    color: '#a0aec0',
-    marginTop: '2px'
-  },
-  weatherContent: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '20px'
-  },
-  weatherMain: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '20px',
-    padding: '15px 0'
-  },
-  weatherIcon: {
-    fontSize: '60px'
-  },
-  weatherTemp: {
-    display: 'flex',
-    flexDirection: 'column'
-  },
-  temperature: {
-    fontSize: '48px',
-    fontWeight: '300',
-    color: '#2d3748',
-    lineHeight: '1'
-  },
-  weatherDesc: {
-    fontSize: '16px',
-    color: '#718096',
-    textTransform: 'capitalize',
-    marginBottom: '4px'
-  },
-  location: {
-    fontSize: '14px',
-    color: '#a0aec0'
-  },
-  weatherDetails: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '15px'
-  },
-  weatherItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    padding: '10px',
-    backgroundColor: '#f7fafc',
-    borderRadius: '8px',
-    fontSize: '14px'
-  },
-  weatherAdvice: {
-    backgroundColor: '#e6fffa',
-    padding: '15px',
-    borderRadius: '8px',
-    borderLeft: '4px solid #38b2ac'
-  },
-  weatherError: {
-    textAlign: 'center',
-    padding: '40px 0'
-  },
-  retryButton: {
-    marginTop: '10px',
-    padding: '8px 16px',
-    backgroundColor: '#3182ce',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer'
-  },
-  modalOverlay: {
-    position: 'fixed', 
-    top: 0, 
-    left: 0, 
-    right: 0, 
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.6)', 
-    display: 'flex',
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    zIndex: 1000,
-    backdropFilter: 'blur(4px)'
-  },
-  modal: {
-    backgroundColor: '#fff', 
-    padding: '0', 
-    borderRadius: '16px',
-    width: '500px', 
-    maxHeight: '90vh',
-    overflow: 'auto',
-    boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
-  },
-  modalTitle: {
-    fontSize: '24px',
-    fontWeight: '600',
-    color: '#2d3748',
-    margin: '0 0 20px 0',
-    padding: '30px 30px 0 30px'
-  },
-  modalForm: {
-    padding: '0 30px 30px 30px'
-  },
-  inputGroup: {
-    marginBottom: '20px'
-  },
-  inputLabel: {
-    display: 'block',
-    fontSize: '14px',
-    fontWeight: '500',
-    color: '#4a5568',
-    marginBottom: '6px'
-  },
-  input: {
-    width: '100%',
-    padding: '12px 16px',
-    border: '2px solid #e2e8f0',
-    borderRadius: '8px',
-    fontSize: '14px',
-    transition: 'border-color 0.3s ease',
-    boxSizing: 'border-box'
-  },
-  select: {
-    width: '100%',
-    padding: '12px 16px',
-    border: '2px solid #e2e8f0',
-    borderRadius: '8px',
-    fontSize: '14px',
-    backgroundColor: '#fff',
-    boxSizing: 'border-box'
-  },
-  fileInput: {
-    width: '100%',
-    padding: '8px',
-    border: '2px dashed #e2e8f0',
-    borderRadius: '8px',
-    fontSize: '14px',
-    boxSizing: 'border-box'
-  },
-  modalButtons: {
-    display: 'flex',
-    gap: '12px',
-    marginTop: '30px'
-  },
-  saveButton: {
-    flex: 1,
-    padding: '12px 24px',
-    backgroundColor: '#3182ce',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '8px',
-    fontSize: '14px',
-    fontWeight: '600',
-    cursor: 'pointer',
-    transition: 'background-color 0.3s ease'
-  },
-  cancelButton: {
-    flex: 1,
-    padding: '12px 24px',
-    backgroundColor: '#e2e8f0',
-    color: '#4a5568',
-    border: 'none',
-    borderRadius: '8px',
-    fontSize: '14px',
-    fontWeight: '600',
-    cursor: 'pointer',
-    transition: 'background-color 0.3s ease'
-  }
 };
 
 export default UserDashboard;

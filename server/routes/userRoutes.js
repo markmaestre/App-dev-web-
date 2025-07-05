@@ -1,12 +1,34 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
 const User = require('../models/User');
 const auth = require('../Middleware/auth');
 
 const router = express.Router();
 
-// Registration
+// ==== Cloudinary Config ====
+cloudinary.config({
+  cloud_name: 'dtisam8ot',
+  api_key: '416996345946976',
+  api_secret: 'dcfIgNOmXE5GkMyXgOAHnMxVeLg',
+});
+
+// ==== Multer-Cloudinary Storage ====
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'user_profiles',
+    allowed_formats: ['jpg', 'jpeg', 'png'],
+    transformation: [{ width: 300, height: 300, crop: 'limit' }],
+  },
+});
+
+const upload = multer({ storage });
+
+// ==== Registration ====
 router.post('/register', async (req, res) => {
   const { username, email, password, bod, gender, address, role } = req.body;
   try {
@@ -23,7 +45,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Login
+// ==== Login ====
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -61,12 +83,16 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Edit profile
-router.put('/profile', auth, async (req, res) => {
-  const { username, bod, gender, address, profile } = req.body;
+
+router.put('/profile', auth, upload.single('profile'), async (req, res) => {
+  const { username, bod, gender, address } = req.body;
 
   try {
-    const updates = { username, bod, gender, address, profile };
+    const updates = { username, bod, gender, address };
+    if (req.file && req.file.path) {
+      updates.profile = req.file.path;
+    }
+
     const user = await User.findByIdAndUpdate(req.user.id, updates, { new: true });
 
     if (!user) return res.status(404).json({ message: 'User not found' });
@@ -90,7 +116,7 @@ router.put('/profile', auth, async (req, res) => {
   }
 });
 
-// Admin: Get all users
+// ==== Admin: Get All Users ====
 router.get('/all-users', auth, async (req, res) => {
   try {
     if (req.user.role !== 'admin') return res.status(403).json({ message: 'Access denied. Admins only.' });
@@ -102,7 +128,7 @@ router.get('/all-users', auth, async (req, res) => {
   }
 });
 
-// Admin: Ban or activate user
+// ==== Admin: Ban or Activate User ====
 router.put('/ban/:id', auth, async (req, res) => {
   if (req.user.role !== 'admin') {
     return res.status(403).json({ message: 'Access denied. Admins only.' });
