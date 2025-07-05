@@ -5,7 +5,8 @@ import Register from './Components/Dashboard/Register';
 import Login from './Components/Dashboard/Login';
 import AdminDashboard from './Components/Admin/adminDashboard';
 import UserDashboard from './Components/Client/userDashboard';
-
+import Learning from './Components/Client/learning';
+import Chatbot from './Components/Client/chatbot';
 
 function App() {
   return (
@@ -16,7 +17,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/adminDashboard" element={<AdminDashboard />} />
         <Route path="/userDashboard" element={<UserDashboard />} />
-    
+        <Route path="/learning" element={<Learning />} />
+        <Route path="/assistant" element={<Chatbot/>}/>
       </Routes>
     </Router>
   );
