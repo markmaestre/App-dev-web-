@@ -140,7 +140,7 @@ User's question: ${input}`,
               <path d="M12 16L13.09 22.26L22 23L13.09 23.74L12 30L10.91 23.74L2 23L10.91 22.26L12 16Z"/>
             </svg>
             <div>
-              <h1 style={styles.title}>AgriAssist Pro</h1>
+              <h1 style={styles.title}>SmartFARM</h1>
               <p style={styles.subtitle}>AI-Powered Agricultural Assistant • Gemini 1.5 Flash</p>
             </div>
           </div>
@@ -178,7 +178,7 @@ User's question: ${input}`,
                 <path d="M3 18h18"/>
               </svg>
             </div>
-            <h3 style={styles.welcomeTitle}>Welcome to AgriAssist Pro</h3>
+            <h3 style={styles.welcomeTitle}>Welcome to SmartFARM</h3>
             <p style={styles.welcomeText}>
               Your intelligent farming companion. Ask me about crops, weather, soil management, 
               pest control, or any agricultural question in Tagalog, English, or Taglish.
