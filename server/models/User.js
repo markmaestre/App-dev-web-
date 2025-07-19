@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
   bod: String,
   gender: String,
   address: String,
-  role: { type: String, default: 'user' },
+  role: { type: String, default: 'customer' },
   profile: String,
   lastLogin: Date,
   createdAt: { type: Date, default: Date.now },

@@ -10,7 +10,7 @@ const Register = () => {
     bod: '',
     gender: '',
     address: '',
-    role: 'user',
+    role: 'customer', // Default to customer
   });
 
   const [error, setError] = useState('');
@@ -44,7 +44,7 @@ const Register = () => {
 
   return (
     <>
-      {/* Enhanced CSS Styles */}
+      {/* CSS Styles (unchanged) */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
@@ -314,6 +314,62 @@ const Register = () => {
           gap: 1rem;
         }
         
+        .role-selection {
+          display: flex;
+          gap: 1rem;
+          margin-bottom: 1.5rem;
+        }
+        
+        .role-option {
+          flex: 1;
+          position: relative;
+        }
+        
+        .role-option input {
+          position: absolute;
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+        
+        .role-label {
+          display: block;
+          padding: 1rem;
+          border: 2px solid #e2e8f0;
+          border-radius: 0.75rem;
+          text-align: center;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          background: rgba(255, 255, 255, 0.8);
+        }
+        
+        .role-option input:checked + .role-label {
+          border-color: #667eea;
+          background: rgba(102, 126, 234, 0.1);
+          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .role-option input:focus + .role-label {
+          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+        }
+        
+        .role-icon {
+          font-size: 1.5rem;
+          margin-bottom: 0.5rem;
+          display: block;
+        }
+        
+        .role-name {
+          font-weight: 600;
+          color: #2d3748;
+        }
+        
+        .role-description {
+          font-size: 0.75rem;
+          color: #718096;
+          margin-top: 0.25rem;
+        }
+        
         @media (max-width: 640px) {
           .register-container {
             padding: 1rem;
@@ -331,10 +387,14 @@ const Register = () => {
           .form-row {
             grid-template-columns: 1fr;
           }
+          
+          .role-selection {
+            flex-direction: column;
+          }
         }
       `}</style>
 
-      {/* Enhanced Register Form */}
+      {/* Register Form with Role Selection */}
       <div className="register-container">
         <div className="register-box">
           <h2 className="register-title">Create Account</h2>
@@ -383,6 +443,44 @@ const Register = () => {
                 className="register-input"
                 placeholder="Create a strong password"
               />
+            </div>
+
+            {/* Role Selection */}
+            <div className="form-group">
+              <label className="form-label">Account Type</label>
+              <div className="role-selection">
+                <div className="role-option">
+                  <input
+                    type="radio"
+                    id="customer"
+                    name="role"
+                    value="customer"
+                    checked={formData.role === 'customer'}
+                    onChange={handleChange}
+                  />
+                  <label htmlFor="customer" className="role-label">
+                    <span className="role-icon">👨‍💼</span>
+                    <span className="role-name">Customer</span>
+                    <span className="role-description">Buy fresh products</span>
+                  </label>
+                </div>
+                
+                <div className="role-option">
+                  <input
+                    type="radio"
+                    id="farmer"
+                    name="role"
+                    value="farmer"
+                    checked={formData.role === 'farmer'}
+                    onChange={handleChange}
+                  />
+                  <label htmlFor="farmer" className="role-label">
+                    <span className="role-icon">👨‍🌾</span>
+                    <span className="role-name">Farmer</span>
+                    <span className="role-description">Sell your products</span>
+                  </label>
+                </div>
+              </div>
             </div>
 
             <div className="form-row">

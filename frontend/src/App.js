@@ -7,6 +7,11 @@ import AdminDashboard from './Components/Admin/adminDashboard';
 import UserDashboard from './Components/Client/userDashboard';
 import Learning from './Components/Client/learning';
 import Chatbot from './Components/Client/chatbot';
+import Market from './Components/Client/market';
+import CustomerDashboard from './Components/Customer/Customer';
+import CartPage from './Components/Customer/CartPage';
+import MarketDetails from './Components/Customer/MarketPage';
+import PaymentHistory from './Components/Customer/PaymentHistory';
 
 function App() {
   return (
@@ -19,6 +24,11 @@ function App() {
         <Route path="/userDashboard" element={<UserDashboard />} />
         <Route path="/learning" element={<Learning />} />
         <Route path="/assistant" element={<Chatbot/>}/>
+        <Route path="/market" element={<Market />} />
+        <Route path="/customerDashboard" element={<CustomerDashboard />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/shop" element={<MarketDetails />} />
+        <Route path="/payment-history" element={<PaymentHistory />} />
       </Routes>
     </Router>
   );

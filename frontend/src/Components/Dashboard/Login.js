@@ -36,10 +36,16 @@ const Login = () => {
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
 
-      if (user.role === 'admin') {
-        navigate('/adminDashboard');
-      } else {
-        navigate('/userDashboard');
+      // Redirect based on user role
+      switch(user.role) {
+        case 'admin':
+          navigate('/adminDashboard');
+          break;
+        case 'customer':
+          navigate('/customerDashboard');
+          break;
+        default:
+          navigate('/userDashboard');
       }
 
     } catch (err) {
