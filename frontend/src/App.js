@@ -14,6 +14,7 @@ import MarketDetails from './Components/Customer/MarketPage';
 import PaymentHistory from './Components/Customer/PaymentHistory';
 import Order from './Components/Customer/Order';
 import Wallet from './Components/Client/Wallet';
+import LiveWeather from './Components/Client/Weather';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
         <Route path="/payment-history" element={<PaymentHistory />} />
         <Route path="/orders" element={<Order />} />
         <Route path="/wallet" element={<Wallet />} />
+        <Route path="/weather" element={<LiveWeather />} />
       </Routes>
 
     </Router>
