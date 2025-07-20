@@ -495,7 +495,7 @@ const CustomerDashboard = () => {
   };
 
   const navItems = [
-    { to: "/customer-dashboard", icon: Home, label: "Dashboard" },
+    { to: "/customerDashboard", icon: Home, label: "Dashboard" },
     { to: "/shop", icon: Store, label: "Shop" },
     { to: "/cart", icon: ShoppingCart, label: "My Cart" },
     { to: "/orders", icon: Package, label: "My Orders" },
