@@ -7,7 +7,6 @@ const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const streamifier = require('streamifier');
 
-
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -17,7 +16,7 @@ cloudinary.config({
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-
+// Create a new market post
 router.post('/', auth, upload.single('image'), async (req, res) => {
   try {
     let imageUrl = '';
@@ -55,7 +54,7 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
   }
 });
 
-
+// Get all market posts
 router.get('/', async (req, res) => {
   try {
     const posts = await Market.find().populate('userId', 'username email');
@@ -65,7 +64,17 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Get posts for a specific user
+router.get('/user/:userId', auth, async (req, res) => {
+  try {
+    const posts = await Market.find({ userId: req.params.userId }).populate('userId', 'username email');
+    res.json(posts);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching user posts', error });
+  }
+});
 
+// Get a single market post by ID
 router.get('/:id', async (req, res) => {
   try {
     const post = await Market.findById(req.params.id).populate('userId', 'username email');
@@ -77,9 +86,17 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-
+// Update a market post
 router.put('/:id', auth, upload.single('image'), async (req, res) => {
   try {
+    const post = await Market.findById(req.params.id);
+    if (!post) return res.status(404).json({ message: 'Post not found' });
+
+    // Authorization check
+    if (post.userId.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'Not authorized to update this post' });
+    }
+
     let imageUrl = req.body.existingImage || '';
 
     if (req.file) {
@@ -111,20 +128,24 @@ router.put('/:id', auth, upload.single('image'), async (req, res) => {
       { new: true }
     );
 
-    if (!updatedPost) return res.status(404).json({ message: 'Post not found' });
-
     res.json({ message: 'Post updated', post: updatedPost });
   } catch (error) {
     res.status(500).json({ message: 'Error updating post', error });
   }
 });
 
-
+// Delete a market post
 router.delete('/:id', auth, async (req, res) => {
   try {
-    const deletedPost = await Market.findByIdAndDelete(req.params.id);
-    if (!deletedPost) return res.status(404).json({ message: 'Post not found' });
+    const post = await Market.findById(req.params.id);
+    if (!post) return res.status(404).json({ message: 'Post not found' });
 
+    // Authorization check
+    if (post.userId.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'Not authorized to delete this post' });
+    }
+
+    await Market.findByIdAndDelete(req.params.id);
     res.json({ message: 'Post deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting post', error });

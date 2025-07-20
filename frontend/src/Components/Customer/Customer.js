@@ -6,18 +6,16 @@ import {
   Edit3, 
   ShoppingCart, 
   CreditCard,
-  History,
-  Store,
   Package,
-  Heart,
-  Settings,
-  LogOut, 
-  Save, 
+  Store,
+  Home,
+  LogOut,
+  MapPin,
+  Save,
   X,
-  ChevronRight,
-  Star,
-  BarChart2,
-  MapPin
+  Sparkles,
+  TrendingUp,
+  Clock
 } from 'lucide-react';
 
 const CustomerDashboard = () => {
@@ -33,7 +31,6 @@ const CustomerDashboard = () => {
   const [marketProducts, setMarketProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [cartItems, setCartItems] = useState([]);
 
   const navigate = useNavigate();
 
@@ -41,381 +38,382 @@ const CustomerDashboard = () => {
     container: {
       display: 'flex',
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      position: 'relative',
+      overflow: 'hidden'
+    },
+    backgroundPattern: {
+      position: 'absolute',
+      inset: 0,
+      backgroundImage: `
+        radial-gradient(circle at 10% 20%, rgba(34, 197, 94, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 20%)
+      `,
+      zIndex: 0
     },
     sidebar: {
-      width: '18rem',
-      background: 'linear-gradient(180deg, #166534 0%, #14532d 100%)',
+      width: '280px',
+      background: 'rgba(15, 23, 42, 0.98)',
       color: 'white',
-      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-      position: 'relative'
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100vh',
+      position: 'sticky',
+      top: 0,
+      zIndex: 10,
+      borderRight: '1px solid rgba(255, 255, 255, 0.08)',
+      boxShadow: '4px 0 20px rgba(0, 0, 0, 0.2)'
     },
     sidebarContent: {
-      padding: '1.5rem'
+      padding: '24px',
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'hidden'
     },
     profileSection: {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      marginBottom: '2rem',
-      padding: '1.5rem',
-      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-      borderRadius: '1rem',
-      backdropFilter: 'blur(8px)'
+      marginBottom: '32px',
+      padding: '24px 16px',
+      background: 'rgba(34, 197, 94, 0.08)',
+      borderRadius: '16px',
+      border: '1px solid rgba(34, 197, 94, 0.15)',
+      position: 'relative'
     },
     profileImageContainer: {
       position: 'relative',
-      marginBottom: '1rem'
+      marginBottom: '16px'
     },
     profileImage: {
-      width: '5rem',
-      height: '5rem',
+      width: '80px',
+      height: '80px',
       borderRadius: '50%',
       objectFit: 'cover',
-      border: '4px solid white',
-      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)'
+      border: '3px solid rgba(34, 197, 94, 0.5)',
+      boxShadow: '0 4px 20px rgba(34, 197, 94, 0.2)'
     },
     profilePlaceholder: {
-      width: '5rem',
-      height: '5rem',
-      background: 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)',
+      width: '80px',
+      height: '80px',
+      background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
       borderRadius: '50%',
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'center',
-      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)'
+      justifyContent: 'center'
     },
     profileStatus: {
       position: 'absolute',
-      bottom: '-0.25rem',
-      right: '-0.25rem',
-      width: '1.5rem',
-      height: '1.5rem',
-      backgroundColor: '#4ade80',
+      bottom: '4px',
+      right: '4px',
+      width: '16px',
+      height: '16px',
+      background: '#22c55e',
       borderRadius: '50%',
-      border: '2px solid white'
+      border: '2px solid rgba(255, 255, 255, 0.2)'
     },
     profileName: {
-      fontSize: '1.25rem',
-      fontWeight: 'bold',
-      marginBottom: '0.5rem',
+      fontSize: '18px',
+      fontWeight: 600,
+      marginBottom: '8px',
+      color: 'white',
       textAlign: 'center'
     },
     editButton: {
       display: 'flex',
       alignItems: 'center',
-      gap: '0.5rem',
-      padding: '0.5rem 1rem',
-      backgroundColor: '#16a34a',
-      color: 'white',
-      border: 'none',
-      borderRadius: '0.5rem',
+      gap: '8px',
+      padding: '10px 16px',
+      background: 'rgba(34, 197, 94, 0.1)',
+      color: '#22c55e',
+      border: '1px solid rgba(34, 197, 94, 0.3)',
+      borderRadius: '12px',
       cursor: 'pointer',
-      fontSize: '0.875rem',
-      fontWeight: '500',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      fontSize: '14px',
+      fontWeight: 500,
       transition: 'all 0.2s ease'
+    },
+    navigationContainer: {
+      flex: 1,
+      overflowY: 'auto',
+      paddingRight: '8px',
+      marginBottom: '24px'
     },
     navigation: {
       display: 'flex',
       flexDirection: 'column',
-      gap: '0.5rem'
+      gap: '4px'
     },
     navLink: {
       display: 'flex',
       alignItems: 'center',
-      gap: '0.75rem',
-      padding: '0.75rem 1rem',
-      borderRadius: '0.75rem',
+      gap: '12px',
+      padding: '12px 16px',
+      borderRadius: '12px',
       textDecoration: 'none',
-      color: 'white',
+      color: 'rgba(255, 255, 255, 0.7)',
       transition: 'all 0.2s ease',
-      fontWeight: '500'
+      fontSize: '15px',
+      fontWeight: 500
     },
     logoutSection: {
-      padding: '1.5rem',
-      marginTop: 'auto',
-      position: 'absolute',
-      bottom: '0',
-      left: '0',
-      right: '0'
+      padding: '16px',
+      borderTop: '1px solid rgba(255, 255, 255, 0.08)'
     },
     logoutButton: {
       display: 'flex',
       alignItems: 'center',
-      gap: '0.5rem',
+      gap: '10px',
       width: '100%',
-      padding: '0.75rem 1rem',
-      backgroundColor: '#dc2626',
-      color: 'white',
-      border: 'none',
-      borderRadius: '0.75rem',
+      padding: '12px 16px',
+      background: 'rgba(220, 38, 38, 0.1)',
+      color: '#ef4444',
+      border: '1px solid rgba(220, 38, 38, 0.3)',
+      borderRadius: '12px',
       cursor: 'pointer',
-      fontWeight: '500',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      fontWeight: 500,
+      fontSize: '15px',
       transition: 'all 0.2s ease'
     },
     mainContent: {
       flex: 1,
-      padding: '2rem',
-      overflowY: 'auto'
+      padding: '32px',
+      overflowY: 'auto',
+      position: 'relative',
+      zIndex: 1
     },
     editForm: {
-      maxWidth: '32rem',
+      maxWidth: '600px',
       margin: '0 auto'
     },
     editFormCard: {
-      backgroundColor: 'white',
-      borderRadius: '1.5rem',
-      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-      padding: '2rem'
+      background: 'rgba(255, 255, 255, 0.98)',
+      borderRadius: '16px',
+      boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)',
+      padding: '32px',
+      border: '1px solid rgba(0, 0, 0, 0.05)'
     },
     editFormHeader: {
       display: 'flex',
       alignItems: 'center',
-      gap: '0.75rem',
-      marginBottom: '1.5rem'
+      gap: '12px',
+      marginBottom: '24px'
     },
     editFormTitle: {
-      fontSize: '1.875rem',
-      fontWeight: 'bold',
+      fontSize: '24px',
+      fontWeight: 600,
       color: '#1f2937'
     },
     formGroup: {
-      marginBottom: '1.5rem'
+      marginBottom: '20px'
     },
     label: {
       display: 'block',
-      fontSize: '0.875rem',
-      fontWeight: '500',
-      color: '#374151',
-      marginBottom: '0.5rem'
+      fontSize: '14px',
+      fontWeight: 500,
+      color: '#4b5563',
+      marginBottom: '8px'
     },
     input: {
       width: '100%',
-      padding: '0.75rem 1rem',
-      borderRadius: '0.75rem',
-      border: '2px solid #e5e7eb',
-      fontSize: '1rem',
-      transition: 'border-color 0.2s ease',
+      padding: '12px 16px',
+      borderRadius: '12px',
+      border: '1px solid #e5e7eb',
+      fontSize: '15px',
+      transition: 'all 0.2s ease',
       outline: 'none',
-      boxSizing: 'border-box'
+      backgroundColor: 'rgba(249, 250, 251, 0.8)'
     },
     fileInput: {
       width: '100%',
-      padding: '0.75rem 1rem',
-      borderRadius: '0.75rem',
-      border: '2px solid #e5e7eb',
-      fontSize: '1rem',
-      transition: 'border-color 0.2s ease',
-      outline: 'none',
-      boxSizing: 'border-box'
+      padding: '12px 16px',
+      borderRadius: '12px',
+      border: '1px solid #e5e7eb',
+      fontSize: '15px',
+      backgroundColor: 'rgba(249, 250, 251, 0.8)'
     },
     buttonGroup: {
       display: 'flex',
-      gap: '1rem',
-      marginTop: '2rem'
+      gap: '16px',
+      marginTop: '24px'
     },
     saveButton: {
       display: 'flex',
       alignItems: 'center',
-      gap: '0.5rem',
-      padding: '0.75rem 1.5rem',
-      backgroundColor: '#16a34a',
+      gap: '8px',
+      padding: '12px 20px',
+      background: '#22c55e',
       color: 'white',
       border: 'none',
-      borderRadius: '0.75rem',
+      borderRadius: '12px',
       cursor: 'pointer',
-      fontWeight: '500',
-      boxShadow: '0 10px 15px rgba(0, 0, 0, 0.1)',
+      fontWeight: 500,
+      fontSize: '15px',
       transition: 'all 0.2s ease'
     },
     cancelButton: {
       display: 'flex',
       alignItems: 'center',
-      gap: '0.5rem',
-      padding: '0.75rem 1.5rem',
-      backgroundColor: '#6b7280',
-      color: 'white',
+      gap: '8px',
+      padding: '12px 20px',
+      background: 'rgba(107, 114, 128, 0.1)',
+      color: '#4b5563',
       border: 'none',
-      borderRadius: '0.75rem',
+      borderRadius: '12px',
       cursor: 'pointer',
-      fontWeight: '500',
-      boxShadow: '0 10px 15px rgba(0, 0, 0, 0.1)',
+      fontWeight: 500,
+      fontSize: '15px',
       transition: 'all 0.2s ease'
     },
     dashboardContent: {
       display: 'flex',
       flexDirection: 'column',
-      gap: '2rem'
+      gap: '32px',
+      maxWidth: '1400px',
+      margin: '0 auto',
+      width: '100%'
     },
     welcomeHeader: {
-      textAlign: 'center',
-      marginBottom: '2rem'
+      textAlign: 'left',
+      marginBottom: '32px'
     },
     welcomeTitle: {
-      fontSize: '2.25rem',
-      fontWeight: 'bold',
-      color: '#1f2937',
-      marginBottom: '0.5rem'
+      fontSize: '32px',
+      fontWeight: 700,
+      color: 'white',
+      marginBottom: '12px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px'
     },
     welcomeSubtitle: {
-      fontSize: '1.125rem',
-      color: '#6b7280'
+      fontSize: '16px',
+      color: 'rgba(255, 255, 255, 0.7)',
+      fontWeight: 400
+    },
+    sparkleIcon: {
+      color: '#fbbf24'
     },
     card: {
-      backgroundColor: 'white',
-      borderRadius: '1.5rem',
-      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-      padding: '2rem',
-      overflow: 'hidden',
-      position: 'relative'
+      background: 'rgba(255, 255, 255, 0.05)',
+      backdropFilter: 'blur(16px)',
+      borderRadius: '16px',
+      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+      padding: '24px',
+      border: '1px solid rgba(255, 255, 255, 0.08)'
     },
     cardHeader: {
       display: 'flex',
       alignItems: 'center',
-      gap: '0.75rem',
-      marginBottom: '1.5rem'
+      gap: '12px',
+      marginBottom: '24px'
     },
     cardTitle: {
-      fontSize: '1.5rem',
-      fontWeight: 'bold',
-      color: '#1f2937'
+      fontSize: '20px',
+      fontWeight: 600,
+      color: 'white'
     },
     productGrid: {
       display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-      gap: '1rem'
+      gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+      gap: '20px'
     },
     productCard: {
-      border: '1px solid #e5e7eb',
-      borderRadius: '0.75rem',
-      padding: '1rem',
+      background: 'white',
+      borderRadius: '12px',
+      padding: '16px',
       display: 'flex',
       flexDirection: 'column',
-      transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+      transition: 'all 0.2s ease',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+      border: '1px solid rgba(0, 0, 0, 0.05)'
     },
     productImage: {
       width: '100%',
-      height: '150px',
+      height: '180px',
       objectFit: 'cover',
-      borderRadius: '0.5rem',
-      marginBottom: '0.5rem'
+      borderRadius: '8px',
+      marginBottom: '12px'
     },
     productName: {
-      fontWeight: '600',
-      marginBottom: '0.25rem'
+      fontWeight: 600,
+      marginBottom: '8px',
+      fontSize: '16px',
+      color: '#1f2937'
     },
     productDescription: {
       color: '#6b7280',
-      fontSize: '0.875rem',
-      marginBottom: '0.5rem'
+      fontSize: '14px',
+      marginBottom: '12px',
+      lineHeight: 1.5
     },
     productPrice: {
-      fontWeight: 'bold'
+      fontWeight: 600,
+      fontSize: '18px',
+      color: '#059669'
     },
     productQuantity: {
-      fontSize: '0.75rem',
-      backgroundColor: '#dcfce7',
+      fontSize: '13px',
+      background: '#dcfce7',
       color: '#166534',
-      padding: '0.25rem 0.5rem',
-      borderRadius: '0.5rem',
-      display: 'inline-block'
+      padding: '4px 8px',
+      borderRadius: '12px',
+      fontWeight: 500
     },
     productLocation: {
-      fontSize: '0.75rem',
-      color: '#6b7280'
+      fontSize: '14px',
+      color: '#6b7280',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '6px',
+      marginTop: '8px'
     },
-    addToCartButton: {
-      padding: '0.5rem 1rem',
-      backgroundColor: '#16a34a',
+    shopButton: {
+      padding: '10px 16px',
+      background: '#22c55e',
       color: 'white',
       border: 'none',
-      borderRadius: '0.5rem',
+      borderRadius: '8px',
       cursor: 'pointer',
-      fontSize: '0.875rem',
-      transition: 'background-color 0.2s ease',
-      marginTop: '0.5rem'
-    },
-    cartItem: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      padding: '1rem',
-      borderBottom: '1px solid #e5e7eb'
-    },
-    cartItemImage: {
-      width: '50px',
-      height: '50px',
-      objectFit: 'cover',
-      borderRadius: '0.5rem'
-    },
-    cartItemDetails: {
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '0.25rem'
-    },
-    cartItemName: {
-      fontWeight: '500'
-    },
-    cartItemPrice: {
-      fontSize: '0.875rem',
-      color: '#6b7280'
-    },
-    cartItemQuantity: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.5rem'
-    },
-    quantityButton: {
-      width: '1.5rem',
-      height: '1.5rem',
-      borderRadius: '50%',
-      border: '1px solid #e5e7eb',
+      fontSize: '14px',
+      fontWeight: 500,
+      transition: 'all 0.2s ease',
+      marginTop: '16px',
+      textAlign: 'center',
+      textDecoration: 'none',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      cursor: 'pointer',
-      transition: 'background-color 0.2s ease'
-    },
-    cartTotal: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      padding: '1rem',
-      fontWeight: 'bold',
-      fontSize: '1.125rem'
-    },
-    checkoutButton: {
-      width: '100%',
-      padding: '0.75rem',
-      backgroundColor: '#16a34a',
-      color: 'white',
-      border: 'none',
-      borderRadius: '0.75rem',
-      cursor: 'pointer',
-      fontWeight: '500',
-      marginTop: '1rem',
-      transition: 'background-color 0.2s ease'
+      gap: '6px'
     },
     loadingSpinner: {
-      border: '3px solid rgba(0, 0, 0, 0.1)',
-      borderTop: '3px solid #16a34a',
+      border: '4px solid rgba(255, 255, 255, 0.1)',
+      borderTop: '4px solid #22c55e',
       borderRadius: '50%',
-      width: '30px',
-      height: '30px',
+      width: '40px',
+      height: '40px',
       animation: 'spin 1s linear infinite',
-      margin: '0 auto'
+      margin: '2rem auto'
     },
     loadingText: {
-      marginTop: '0.5rem',
-      color: '#6b7280',
-      textAlign: 'center'
+      marginTop: '1rem',
+      color: 'rgba(255, 255, 255, 0.7)',
+      textAlign: 'center',
+      fontSize: '16px'
     },
     errorMessage: {
-      color: '#dc2626',
+      color: '#ef4444',
       textAlign: 'center',
-      padding: '1rem'
+      padding: '2rem',
+      fontSize: '16px'
+    },
+    priceQuantityContainer: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: '12px'
     }
   };
 
@@ -496,51 +494,12 @@ const CustomerDashboard = () => {
     }
   };
 
-  const addToCart = (product) => {
-    setCartItems(prevItems => {
-      const existingItem = prevItems.find(item => item.id === product._id);
-      if (existingItem) {
-        return prevItems.map(item =>
-          item.id === product._id 
-            ? { ...item, quantity: item.quantity + 1 } 
-            : item
-        );
-      } else {
-        return [
-          ...prevItems,
-          {
-            id: product._id,
-            name: product.productName,
-            price: product.price,
-            quantity: 1,
-            image: product.image
-          }
-        ];
-      }
-    });
-  };
-
-  const updateQuantity = (id, newQuantity) => {
-    if (newQuantity < 1) {
-      removeFromCart(id);
-      return;
-    }
-    setCartItems(cartItems.map(item => 
-      item.id === id ? { ...item, quantity: newQuantity } : item
-    ));
-  };
-
-  const removeFromCart = (id) => {
-    setCartItems(cartItems.filter(item => item.id !== id));
-  };
-
   const navItems = [
+    { to: "/customer-dashboard", icon: Home, label: "Dashboard" },
     { to: "/shop", icon: Store, label: "Shop" },
     { to: "/cart", icon: ShoppingCart, label: "My Cart" },
     { to: "/orders", icon: Package, label: "My Orders" },
     { to: "/payment-history", icon: CreditCard, label: "Payment History" },
-    { to: "/wishlist", icon: Heart, label: "Wishlist" },
-    { to: "/account-settings", icon: Settings, label: "Account Settings" },
   ];
 
   return (
@@ -553,62 +512,72 @@ const CustomerDashboard = () => {
           }
           
           .nav-link:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background: rgba(34, 197, 94, 0.1) !important;
+            color: white !important;
           }
           
           .nav-link.active {
-            background-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: rgba(34, 197, 94, 0.2) !important;
+            color: white !important;
           }
           
           .edit-button:hover {
-            background-color: #15803d;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            transform: scale(1.05);
+            background: rgba(34, 197, 94, 0.2) !important;
+            color: white !important;
           }
           
           .logout-button:hover {
-            background-color: #b91c1c;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            transform: scale(1.05);
+            background: rgba(220, 38, 38, 0.2) !important;
+            color: white !important;
           }
           
           .save-button:hover {
-            background-color: #15803d;
-            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
-            transform: scale(1.05);
+            background: #16a34a !important;
+            transform: translateY(-2px);
           }
           
           .cancel-button:hover {
-            background-color: #4b5563;
-            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
-            transform: scale(1.05);
+            background: rgba(107, 114, 128, 0.2) !important;
           }
           
-          .input-field:focus {
-            border-color: #22c55e;
+          input:focus {
+            border-color: #22c55e !important;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
           }
           
           .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
           }
           
-          .quantity-button:hover {
-            background-color: #f3f4f6;
+          .shop-button:hover {
+            background: #16a34a !important;
           }
           
-          .add-to-cart-button:hover {
-            background-color: #15803d;
+          ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
           }
           
-          .checkout-button:hover {
-            background-color: #15803d;
+          ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+          }
+          
+          ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+          }
+          
+          ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
           }
         `}
       </style>
       
       <div style={styles.container}>
+        <div style={styles.backgroundPattern}></div>
+        
         {/* Sidebar */}
         <div style={styles.sidebar}>
           <div style={styles.sidebarContent}>
@@ -623,7 +592,7 @@ const CustomerDashboard = () => {
                   />
                 ) : (
                   <div style={styles.profilePlaceholder}>
-                    <User size={40} color="white" />
+                    <User size={32} color="white" />
                   </div>
                 )}
                 <div style={styles.profileStatus}></div>
@@ -640,19 +609,21 @@ const CustomerDashboard = () => {
             </div>
             
             {/* Navigation */}
-            <nav style={styles.navigation}>
-              {navItems.map((item) => (
-                <NavLink 
-                  key={item.to}
-                  to={item.to} 
-                  className="nav-link"
-                  style={styles.navLink}
-                >
-                  <item.icon size={20} />
-                  <span>{item.label}</span>
-                </NavLink>
-              ))}
-            </nav>
+            <div style={styles.navigationContainer}>
+              <nav style={styles.navigation}>
+                {navItems.map((item) => (
+                  <NavLink 
+                    key={item.to}
+                    to={item.to} 
+                    className="nav-link"
+                    style={styles.navLink}
+                  >
+                    <item.icon size={20} />
+                    <span>{item.label}</span>
+                  </NavLink>
+                ))}
+              </nav>
+            </div>
           </div>
           
           {/* Logout Button */}
@@ -674,7 +645,7 @@ const CustomerDashboard = () => {
             <div style={styles.editForm}>
               <div style={styles.editFormCard}>
                 <div style={styles.editFormHeader}>
-                  <Edit3 size={32} color="#16a34a" />
+                  <Edit3 size={28} color="#22c55e" />
                   <h2 style={styles.editFormTitle}>Edit Profile</h2>
                 </div>
                 
@@ -749,7 +720,7 @@ const CustomerDashboard = () => {
                     style={styles.saveButton}
                     onClick={handleUpdate}
                   >
-                    <Save size={20} />
+                    <Save size={18} />
                     Save Changes
                   </button>
                   <button 
@@ -757,7 +728,7 @@ const CustomerDashboard = () => {
                     style={styles.cancelButton}
                     onClick={() => setEditing(false)}
                   >
-                    <X size={20} />
+                    <X size={18} />
                     Cancel
                   </button>
                 </div>
@@ -768,22 +739,25 @@ const CustomerDashboard = () => {
               {/* Welcome Header */}
               <div style={styles.welcomeHeader}>
                 <h1 style={styles.welcomeTitle}>
-                  Welcome back, {user?.username || 'Customer'}! 🛍️
+                  Welcome back, {user?.username || 'Customer'}!
+                  <Sparkles size={24} style={styles.sparkleIcon} />
                 </h1>
-                <p style={styles.welcomeSubtitle}>Browse available farm products</p>
+                <p style={styles.welcomeSubtitle}>
+                  Discover fresh farm products from local growers
+                </p>
               </div>
 
               {/* Market Products */}
               <div style={styles.card}>
                 <div style={styles.cardHeader}>
-                  <Store size={32} color="#16a34a" />
+                  <Store size={28} color="#22c55e" />
                   <h3 style={styles.cardTitle}>Available Products</h3>
                 </div>
                 
                 {loading ? (
                   <div>
                     <div style={styles.loadingSpinner}></div>
-                    <p style={styles.loadingText}>Loading products...</p>
+                    <p style={styles.loadingText}>Loading fresh products...</p>
                   </div>
                 ) : error ? (
                   <p style={styles.errorMessage}>{error}</p>
@@ -806,96 +780,34 @@ const CustomerDashboard = () => {
                         <p style={styles.productDescription}>
                           {product.description}
                         </p>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={styles.priceQuantityContainer}>
                           <span style={styles.productPrice}>₱{product.price}</span>
                           <span style={styles.productQuantity}>
                             {product.availableQuantity} available
                           </span>
                         </div>
-                        <p style={styles.productLocation}>
-                          <MapPin size={14} style={{ marginRight: '0.25rem' }} />
+                        <div style={styles.productLocation}>
+                          <MapPin size={16} />
                           {product.location}
-                        </p>
-                        <button
-                          onClick={() => addToCart(product)}
-                          className="add-to-cart-button"
-                          style={styles.addToCartButton}
+                        </div>
+                        <NavLink
+                          to="/shop"
+                          className="shop-button"
+                          style={styles.shopButton}
                         >
-                          Add to Cart
-                        </button>
+                          <Store size={16} />
+                          Visit Shop
+                        </NavLink>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p style={{ textAlign: 'center', padding: '1rem' }}>
-                    No products available at the moment
-                  </p>
+                  <div style={{ textAlign: 'center', padding: '3rem', color: 'rgba(255, 255, 255, 0.7)' }}>
+                    <Package size={48} style={{ margin: '0 auto 1rem', opacity: 0.5 }} />
+                    <p style={{ fontSize: '1.125rem' }}>No products available at the moment</p>
+                    <p style={{ fontSize: '0.875rem', opacity: 0.8 }}>Check back soon for fresh farm products!</p>
+                  </div>
                 )}
-              </div>
-
-              {/* Shopping Cart */}
-              <div style={styles.card}>
-                <div style={styles.cardHeader}>
-                  <ShoppingCart size={32} color="#ea580c" />
-                  <h3 style={styles.cardTitle}>Your Cart</h3>
-                </div>
-                
-                <div>
-                  {cartItems.length > 0 ? (
-                    <>
-                      {cartItems.map(item => (
-                        <div key={item.id} style={styles.cartItem}>
-                          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                            {item.image && (
-                              <img 
-                                src={item.image} 
-                                alt={item.name}
-                                style={styles.cartItemImage}
-                              />
-                            )}
-                            <div style={styles.cartItemDetails}>
-                              <div style={styles.cartItemName}>{item.name}</div>
-                              <div style={styles.cartItemPrice}>₱{item.price.toFixed(2)} each</div>
-                            </div>
-                          </div>
-                          <div style={styles.cartItemQuantity}>
-                            <button 
-                              style={styles.quantityButton}
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            >
-                              -
-                            </button>
-                            <span>{item.quantity}</span>
-                            <button 
-                              style={styles.quantityButton}
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            >
-                              +
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                      
-                      <div style={styles.cartTotal}>
-                        <span>Total:</span>
-                        <span>
-                          ₱{cartItems.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2)}
-                        </span>
-                      </div>
-                      
-                      <button 
-                        className="checkout-button"
-                        style={styles.checkoutButton}
-                      >
-                        Proceed to Checkout
-                      </button>
-                    </>
-                  ) : (
-                    <div style={{ padding: '2rem', textAlign: 'center', color: '#6b7280' }}>
-                      Your cart is empty
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
           )}

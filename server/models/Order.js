@@ -56,7 +56,7 @@ const OrderSchema = new mongoose.Schema({
     default: 'processing'
   },
   paymentProof: {
-    type: String // URL to payment proof image
+    type: String 
   }
 }, {
   timestamps: true

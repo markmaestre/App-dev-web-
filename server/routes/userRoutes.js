@@ -116,19 +116,21 @@ router.put('/profile', auth, upload.single('profile'), async (req, res) => {
   }
 });
 
-// ==== Admin: Get All Users ====
+// Admin: Get All Users
 router.get('/all-users', auth, async (req, res) => {
   try {
-    if (req.user.role !== 'admin') return res.status(403).json({ message: 'Access denied. Admins only.' });
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied. Admins only.' });
+    }
 
     const users = await User.find().select('-password');
     res.json(users);
   } catch (error) {
-    res.status(500).json({ message: 'Server error fetching users' });
+    res.status(500).json({ message: 'Server error fetching users', error });
   }
 });
 
-// ==== Admin: Ban or Activate User ====
+// Admin: Ban or Activate User
 router.put('/ban/:id', auth, async (req, res) => {
   if (req.user.role !== 'admin') {
     return res.status(403).json({ message: 'Access denied. Admins only.' });
@@ -140,14 +142,27 @@ router.put('/ban/:id', auth, async (req, res) => {
   }
 
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, { status }, { new: true });
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    ).select('-password');
 
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
-    res.json({ message: `User status updated to ${status}`, user });
+    res.json({ 
+      message: `User status updated to ${status}`,
+      user 
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error updating user status' });
+    res.status(500).json({ 
+      message: 'Error updating user status',
+      error 
+    });
   }
 });
+
 
 module.exports = router;

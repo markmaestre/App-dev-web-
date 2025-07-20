@@ -21,7 +21,12 @@ import {
   BarChart3,
   Sprout,
   DollarSign,
-  MapPin
+  MapPin,
+  Home,
+  Package,
+  CreditCard,
+  Store,
+  Sparkles
 } from 'lucide-react';
 
 const UserDashboard = () => {
@@ -57,316 +62,292 @@ const UserDashboard = () => {
     container: {
       display: 'flex',
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      position: 'relative',
+      overflow: 'hidden'
+    },
+    backgroundPattern: {
+      position: 'absolute',
+      inset: 0,
+      backgroundImage: `
+        radial-gradient(circle at 10% 20%, rgba(34, 197, 94, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 20%)
+      `,
+      zIndex: 0
     },
     sidebar: {
-      width: '18rem',
-      background: 'linear-gradient(180deg, #166534 0%, #14532d 100%)',
+      width: '280px',
+      background: 'rgba(15, 23, 42, 0.98)',
       color: 'white',
-      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-      position: 'relative'
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100vh',
+      position: 'sticky',
+      top: 0,
+      zIndex: 10,
+      borderRight: '1px solid rgba(255, 255, 255, 0.08)',
+      boxShadow: '4px 0 20px rgba(0, 0, 0, 0.2)'
     },
     sidebarContent: {
-      padding: '1.5rem'
+      padding: '24px',
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'hidden'
     },
     profileSection: {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      marginBottom: '2rem',
-      padding: '1.5rem',
-      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-      borderRadius: '1rem',
-      backdropFilter: 'blur(8px)'
+      marginBottom: '32px',
+      padding: '24px 16px',
+      background: 'rgba(34, 197, 94, 0.08)',
+      borderRadius: '16px',
+      border: '1px solid rgba(34, 197, 94, 0.15)',
+      position: 'relative'
     },
     profileImageContainer: {
       position: 'relative',
-      marginBottom: '1rem'
+      marginBottom: '16px'
     },
     profileImage: {
-      width: '5rem',
-      height: '5rem',
+      width: '80px',
+      height: '80px',
       borderRadius: '50%',
       objectFit: 'cover',
-      border: '4px solid white',
-      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)'
+      border: '3px solid rgba(34, 197, 94, 0.5)',
+      boxShadow: '0 4px 20px rgba(34, 197, 94, 0.2)'
     },
     profilePlaceholder: {
-      width: '5rem',
-      height: '5rem',
-      background: 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)',
+      width: '80px',
+      height: '80px',
+      background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
       borderRadius: '50%',
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'center',
-      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)'
+      justifyContent: 'center'
     },
     profileStatus: {
       position: 'absolute',
-      bottom: '-0.25rem',
-      right: '-0.25rem',
-      width: '1.5rem',
-      height: '1.5rem',
-      backgroundColor: '#4ade80',
+      bottom: '4px',
+      right: '4px',
+      width: '16px',
+      height: '16px',
+      background: '#22c55e',
       borderRadius: '50%',
-      border: '2px solid white'
+      border: '2px solid rgba(255, 255, 255, 0.2)'
     },
     profileName: {
-      fontSize: '1.25rem',
-      fontWeight: 'bold',
-      marginBottom: '0.5rem',
+      fontSize: '18px',
+      fontWeight: 600,
+      marginBottom: '8px',
+      color: 'white',
       textAlign: 'center'
     },
     editButton: {
       display: 'flex',
       alignItems: 'center',
-      gap: '0.5rem',
-      padding: '0.5rem 1rem',
-      backgroundColor: '#16a34a',
-      color: 'white',
-      border: 'none',
-      borderRadius: '0.5rem',
+      gap: '8px',
+      padding: '10px 16px',
+      background: 'rgba(34, 197, 94, 0.1)',
+      color: '#22c55e',
+      border: '1px solid rgba(34, 197, 94, 0.3)',
+      borderRadius: '12px',
       cursor: 'pointer',
-      fontSize: '0.875rem',
-      fontWeight: '500',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-      transition: 'all 0.2s ease',
-      transform: 'scale(1)'
+      fontSize: '14px',
+      fontWeight: 500,
+      transition: 'all 0.2s ease'
     },
-    editButtonHover: {
-      backgroundColor: '#15803d',
-      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
-      transform: 'scale(1.05)'
+    navigationContainer: {
+      flex: 1,
+      overflowY: 'auto',
+      paddingRight: '8px',
+      marginBottom: '24px'
     },
     navigation: {
       display: 'flex',
       flexDirection: 'column',
-      gap: '0.5rem'
+      gap: '4px'
     },
     navLink: {
       display: 'flex',
       alignItems: 'center',
-      gap: '0.75rem',
-      padding: '0.75rem 1rem',
-      borderRadius: '0.75rem',
+      gap: '12px',
+      padding: '12px 16px',
+      borderRadius: '12px',
       textDecoration: 'none',
-      color: 'white',
+      color: 'rgba(255, 255, 255, 0.7)',
       transition: 'all 0.2s ease',
-      fontWeight: '500'
-    },
-    navLinkHover: {
-      backgroundColor: 'rgba(255, 255, 255, 0.1)'
-    },
-    navLinkActive: {
-      backgroundColor: 'rgba(255, 255, 255, 0.2)',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+      fontSize: '15px',
+      fontWeight: 500
     },
     logoutSection: {
-      padding: '1.5rem',
-      marginTop: 'auto',
-      position: 'absolute',
-      bottom: '0',
-      left: '0',
-      right: '0'
+      padding: '16px',
+      borderTop: '1px solid rgba(255, 255, 255, 0.08)'
     },
     logoutButton: {
       display: 'flex',
       alignItems: 'center',
-      gap: '0.5rem',
+      gap: '10px',
       width: '100%',
-      padding: '0.75rem 1rem',
-      backgroundColor: '#dc2626',
-      color: 'white',
-      border: 'none',
-      borderRadius: '0.75rem',
+      padding: '12px 16px',
+      background: 'rgba(220, 38, 38, 0.1)',
+      color: '#ef4444',
+      border: '1px solid rgba(220, 38, 38, 0.3)',
+      borderRadius: '12px',
       cursor: 'pointer',
-      fontWeight: '500',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-      transition: 'all 0.2s ease',
-      transform: 'scale(1)'
-    },
-    logoutButtonHover: {
-      backgroundColor: '#b91c1c',
-      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
-      transform: 'scale(1.05)'
+      fontWeight: 500,
+      fontSize: '15px',
+      transition: 'all 0.2s ease'
     },
     mainContent: {
       flex: 1,
-      padding: '2rem',
-      overflowY: 'auto'
+      padding: '32px',
+      overflowY: 'auto',
+      position: 'relative',
+      zIndex: 1
     },
     editForm: {
-      maxWidth: '32rem',
+      maxWidth: '600px',
       margin: '0 auto'
     },
     editFormCard: {
-      backgroundColor: 'white',
-      borderRadius: '1.5rem',
-      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-      padding: '2rem'
+      background: 'rgba(255, 255, 255, 0.98)',
+      borderRadius: '16px',
+      boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)',
+      padding: '32px',
+      border: '1px solid rgba(0, 0, 0, 0.05)'
     },
     editFormHeader: {
       display: 'flex',
       alignItems: 'center',
-      gap: '0.75rem',
-      marginBottom: '1.5rem'
+      gap: '12px',
+      marginBottom: '24px'
     },
     editFormTitle: {
-      fontSize: '1.875rem',
-      fontWeight: 'bold',
+      fontSize: '24px',
+      fontWeight: 600,
       color: '#1f2937'
     },
     formGroup: {
-      marginBottom: '1.5rem'
+      marginBottom: '20px'
     },
     label: {
       display: 'block',
-      fontSize: '0.875rem',
-      fontWeight: '500',
-      color: '#374151',
-      marginBottom: '0.5rem'
+      fontSize: '14px',
+      fontWeight: 500,
+      color: '#4b5563',
+      marginBottom: '8px'
     },
     input: {
       width: '100%',
-      padding: '0.75rem 1rem',
-      borderRadius: '0.75rem',
-      border: '2px solid #e5e7eb',
-      fontSize: '1rem',
-      transition: 'border-color 0.2s ease',
+      padding: '12px 16px',
+      borderRadius: '12px',
+      border: '1px solid #e5e7eb',
+      fontSize: '15px',
+      transition: 'all 0.2s ease',
       outline: 'none',
-      boxSizing: 'border-box'
-    },
-    inputFocus: {
-      borderColor: '#22c55e'
+      backgroundColor: 'rgba(249, 250, 251, 0.8)'
     },
     select: {
       width: '100%',
-      padding: '0.75rem 1rem',
-      borderRadius: '0.75rem',
-      border: '2px solid #e5e7eb',
-      fontSize: '1rem',
-      transition: 'border-color 0.2s ease',
+      padding: '12px 16px',
+      borderRadius: '12px',
+      border: '1px solid #e5e7eb',
+      fontSize: '15px',
+      transition: 'all 0.2s ease',
       outline: 'none',
-      backgroundColor: 'white',
-      boxSizing: 'border-box'
+      backgroundColor: 'rgba(249, 250, 251, 0.8)'
     },
     fileInput: {
       width: '100%',
-      padding: '0.75rem 1rem',
-      borderRadius: '0.75rem',
-      border: '2px solid #e5e7eb',
-      fontSize: '1rem',
-      transition: 'border-color 0.2s ease',
-      outline: 'none',
-      boxSizing: 'border-box'
+      padding: '12px 16px',
+      borderRadius: '12px',
+      border: '1px solid #e5e7eb',
+      fontSize: '15px',
+      backgroundColor: 'rgba(249, 250, 251, 0.8)'
     },
     buttonGroup: {
       display: 'flex',
-      gap: '1rem',
-      marginTop: '2rem'
+      gap: '16px',
+      marginTop: '24px'
     },
     saveButton: {
       display: 'flex',
       alignItems: 'center',
-      gap: '0.5rem',
-      padding: '0.75rem 1.5rem',
-      backgroundColor: '#16a34a',
+      gap: '8px',
+      padding: '12px 20px',
+      background: '#22c55e',
       color: 'white',
       border: 'none',
-      borderRadius: '0.75rem',
+      borderRadius: '12px',
       cursor: 'pointer',
-      fontWeight: '500',
-      boxShadow: '0 10px 15px rgba(0, 0, 0, 0.1)',
-      transition: 'all 0.2s ease',
-      transform: 'scale(1)'
-    },
-    saveButtonHover: {
-      backgroundColor: '#15803d',
-      boxShadow: '0 20px 25px rgba(0, 0, 0, 0.15)',
-      transform: 'scale(1.05)'
+      fontWeight: 500,
+      fontSize: '15px',
+      transition: 'all 0.2s ease'
     },
     cancelButton: {
       display: 'flex',
       alignItems: 'center',
-      gap: '0.5rem',
-      padding: '0.75rem 1.5rem',
-      backgroundColor: '#6b7280',
-      color: 'white',
+      gap: '8px',
+      padding: '12px 20px',
+      background: 'rgba(107, 114, 128, 0.1)',
+      color: '#4b5563',
       border: 'none',
-      borderRadius: '0.75rem',
+      borderRadius: '12px',
       cursor: 'pointer',
-      fontWeight: '500',
-      boxShadow: '0 10px 15px rgba(0, 0, 0, 0.1)',
-      transition: 'all 0.2s ease',
-      transform: 'scale(1)'
-    },
-    cancelButtonHover: {
-      backgroundColor: '#4b5563',
-      boxShadow: '0 20px 25px rgba(0, 0, 0, 0.15)',
-      transform: 'scale(1.05)'
+      fontWeight: 500,
+      fontSize: '15px',
+      transition: 'all 0.2s ease'
     },
     dashboardContent: {
       display: 'flex',
       flexDirection: 'column',
-      gap: '2rem'
+      gap: '32px',
+      maxWidth: '1400px',
+      margin: '0 auto',
+      width: '100%'
     },
     welcomeHeader: {
-      textAlign: 'center',
-      marginBottom: '2rem'
+      textAlign: 'left',
+      marginBottom: '32px'
     },
     welcomeTitle: {
-      fontSize: '2.25rem',
-      fontWeight: 'bold',
-      color: '#1f2937',
-      marginBottom: '0.5rem'
+      fontSize: '32px',
+      fontWeight: 700,
+      color: 'white',
+      marginBottom: '12px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px'
     },
     welcomeSubtitle: {
-      fontSize: '1.125rem',
-      color: '#6b7280'
+      fontSize: '16px',
+      color: 'rgba(255, 255, 255, 0.7)',
+      fontWeight: 400
+    },
+    sparkleIcon: {
+      color: '#fbbf24'
     },
     card: {
-      backgroundColor: 'white',
-      borderRadius: '1.5rem',
-      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-      padding: '2rem',
-      overflow: 'hidden',
-      position: 'relative'
-    },
-    cardDecorative: {
-      position: 'absolute',
-      top: '0',
-      right: '0',
-      width: '16rem',
-      height: '16rem',
-      background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(34, 197, 94, 0.2) 100%)',
-      borderRadius: '50%',
-      transform: 'translate(8rem, -8rem)'
-    },
-    cardContent: {
-      position: 'relative',
-      zIndex: 10
+      background: 'rgba(255, 255, 255, 0.05)',
+      backdropFilter: 'blur(16px)',
+      borderRadius: '16px',
+      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+      padding: '24px',
+      border: '1px solid rgba(255, 255, 255, 0.08)'
     },
     cardHeader: {
       display: 'flex',
       alignItems: 'center',
-      gap: '0.75rem',
-      marginBottom: '1.5rem'
+      gap: '12px',
+      marginBottom: '24px'
     },
     cardTitle: {
-      fontSize: '1.5rem',
-      fontWeight: 'bold',
-      color: '#1f2937'
-    },
-    locationInfo: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.5rem',
-      marginBottom: '1.5rem'
-    },
-    locationText: {
-      color: '#6b7280',
-      fontWeight: '500'
+      fontSize: '20px',
+      fontWeight: 600,
+      color: 'white'
     },
     loadingContainer: {
       display: 'flex',
@@ -375,17 +356,19 @@ const UserDashboard = () => {
       padding: '3rem 0'
     },
     loadingSpinner: {
-      animation: 'spin 1s linear infinite',
+      border: '4px solid rgba(255, 255, 255, 0.1)',
+      borderTop: '4px solid #22c55e',
       borderRadius: '50%',
-      height: '3rem',
-      width: '3rem',
-      borderWidth: '0 0 2px 0',
-      borderStyle: 'solid',
-      borderColor: '#3b82f6'
+      width: '40px',
+      height: '40px',
+      animation: 'spin 1s linear infinite',
+      margin: '2rem auto'
     },
     loadingText: {
-      marginLeft: '0.75rem',
-      color: '#6b7280'
+      marginTop: '1rem',
+      color: 'rgba(255, 255, 255, 0.7)',
+      textAlign: 'center',
+      fontSize: '16px'
     },
     weatherGrid: {
       display: 'grid',
@@ -401,12 +384,12 @@ const UserDashboard = () => {
     temperature: {
       fontSize: '3.75rem',
       fontWeight: 'bold',
-      color: '#2563eb',
+      color: '#3b82f6',
       marginBottom: '0.5rem'
     },
     condition: {
       fontSize: '1.25rem',
-      color: '#374151',
+      color: 'rgba(255, 255, 255, 0.9)',
       fontWeight: '500'
     },
     weatherStats: {
@@ -416,19 +399,9 @@ const UserDashboard = () => {
     },
     weatherStatCard: {
       padding: '1rem',
-      borderRadius: '1rem'
-    },
-    weatherStatCardBlue: {
-      background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)'
-    },
-    weatherStatCardGreen: {
-      background: 'linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)'
-    },
-    weatherStatCardPurple: {
-      background: 'linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%)'
-    },
-    weatherStatCardOrange: {
-      background: 'linear-gradient(135deg, #fed7aa 0%, #fdba74 100%)'
+      borderRadius: '1rem',
+      background: 'rgba(255, 255, 255, 0.1)',
+      border: '1px solid rgba(255, 255, 255, 0.08)'
     },
     weatherStatHeader: {
       display: 'flex',
@@ -439,28 +412,17 @@ const UserDashboard = () => {
     weatherStatLabel: {
       fontSize: '0.875rem',
       fontWeight: '500',
-      color: '#374151'
+      color: 'rgba(255, 255, 255, 0.7)'
     },
     weatherStatValue: {
       fontSize: '1.5rem',
-      fontWeight: 'bold'
-    },
-    weatherStatValueBlue: {
-      color: '#2563eb'
-    },
-    weatherStatValueGreen: {
-      color: '#16a34a'
-    },
-    weatherStatValuePurple: {
-      color: '#7c3aed'
-    },
-    weatherStatValueOrange: {
-      color: '#ea580c'
+      fontWeight: 'bold',
+      color: 'white'
     },
     weatherAdvice: {
       fontSize: '0.875rem',
       fontWeight: '500',
-      color: '#ea580c'
+      color: '#fbbf24'
     },
     gridTwoColumns: {
       display: 'grid',
@@ -471,13 +433,13 @@ const UserDashboard = () => {
       gridTemplateColumns: '1fr 1fr'
     },
     tipCard: {
-      background: 'linear-gradient(135deg, #fefce8 0%, #fef3c7 100%)',
+      background: 'rgba(234, 179, 8, 0.1)',
       padding: '1.5rem',
       borderRadius: '1rem',
-      borderLeft: '4px solid #eab308'
+      borderLeft: '4px solid rgba(234, 179, 8, 0.5)'
     },
     tipText: {
-      color: '#374151',
+      color: 'rgba(255, 255, 255, 0.9)',
       fontWeight: '500',
       lineHeight: '1.625'
     },
@@ -491,16 +453,9 @@ const UserDashboard = () => {
       alignItems: 'center',
       justifyContent: 'space-between',
       padding: '1rem',
-      borderRadius: '1rem'
-    },
-    statItemGreen: {
-      background: 'linear-gradient(90deg, #dcfce7 0%, #bbf7d0 100%)'
-    },
-    statItemBlue: {
-      background: 'linear-gradient(90deg, #dbeafe 0%, #bfdbfe 100%)'
-    },
-    statItemPurple: {
-      background: 'linear-gradient(90deg, #f3e8ff 0%, #e9d5ff 100%)'
+      borderRadius: '1rem',
+      background: 'rgba(255, 255, 255, 0.1)',
+      border: '1px solid rgba(255, 255, 255, 0.08)'
     },
     statItemLeft: {
       display: 'flex',
@@ -513,16 +468,8 @@ const UserDashboard = () => {
       borderRadius: '50%',
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'center'
-    },
-    statIconGreen: {
-      backgroundColor: '#22c55e'
-    },
-    statIconBlue: {
-      backgroundColor: '#3b82f6'
-    },
-    statIconPurple: {
-      backgroundColor: '#8b5cf6'
+      justifyContent: 'center',
+      background: 'rgba(34, 197, 94, 0.2)'
     },
     statInfo: {
       display: 'flex',
@@ -530,23 +477,25 @@ const UserDashboard = () => {
     },
     statTitle: {
       fontWeight: '500',
-      color: '#374151'
+      color: 'rgba(255, 255, 255, 0.9)'
     },
     statSubtitle: {
       fontSize: '0.875rem',
-      color: '#6b7280'
+      color: 'rgba(255, 255, 255, 0.6)'
     },
     statValue: {
-      fontWeight: 'bold'
+      fontWeight: 'bold',
+      color: 'white'
     },
-    statValueGreen: {
-      color: '#16a34a'
+    locationInfo: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem',
+      marginBottom: '1.5rem'
     },
-    statValueBlue: {
-      color: '#2563eb'
-    },
-    statValuePurple: {
-      color: '#7c3aed'
+    locationText: {
+      color: 'rgba(255, 255, 255, 0.7)',
+      fontWeight: '500'
     }
   };
 
@@ -689,12 +638,14 @@ const UserDashboard = () => {
   };
 
   const navItems = [
+    { to: "/dashboard", icon: Home, label: "Dashboard" },
     { to: "/weather", icon: Cloud, label: "Weather" },
     { to: "/prediction", icon: TrendingUp, label: "Crop Prediction" },
-    { to: "/market", icon: ShoppingCart, label: "Market Connection" },
+    { to: "/market", icon: Store, label: "Market" },
+    { to: "/cart", icon: ShoppingCart, label: "My Cart" },
     { to: "/records", icon: FileText, label: "Farm Records" },
-    { to: "/learning", icon: BookOpen, label: "Agricultural Learning" },
-    { to: "/assistant", icon: Bot, label: "Farm Assistant" },
+    { to: "/learning", icon: BookOpen, label: "Learning" },
+    { to: "/assistant", icon: Bot, label: "Assistant" },
   ];
 
   return (
@@ -707,54 +658,72 @@ const UserDashboard = () => {
           }
           
           .nav-link:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background: rgba(34, 197, 94, 0.1) !important;
+            color: white !important;
           }
           
           .nav-link.active {
-            background-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: rgba(34, 197, 94, 0.2) !important;
+            color: white !important;
           }
           
           .edit-button:hover {
-            background-color: #15803d;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            transform: scale(1.05);
+            background: rgba(34, 197, 94, 0.2) !important;
+            color: white !important;
           }
           
           .logout-button:hover {
-            background-color: #b91c1c;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            transform: scale(1.05);
+            background: rgba(220, 38, 38, 0.2) !important;
+            color: white !important;
           }
           
           .save-button:hover {
-            background-color: #15803d;
-            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
-            transform: scale(1.05);
+            background: #16a34a !important;
+            transform: translateY(-2px);
           }
           
           .cancel-button:hover {
-            background-color: #4b5563;
-            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
-            transform: scale(1.05);
+            background: rgba(107, 114, 128, 0.2) !important;
           }
           
-          .input-field:focus {
-            border-color: #22c55e;
+          input:focus, select:focus {
+            border-color: #22c55e !important;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
           }
           
           @media (min-width: 1024px) {
             .weather-grid {
-              grid-template-columns: 1fr 1fr;
+              grid-template-columns: 1fr 1fr !important;
             }
             .grid-two-columns {
-              grid-template-columns: 1fr 1fr;
+              grid-template-columns: 1fr 1fr !important;
             }
+          }
+          
+          ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+          }
+          
+          ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+          }
+          
+          ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+          }
+          
+          ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
           }
         `}
       </style>
       
       <div style={styles.container}>
+        <div style={styles.backgroundPattern}></div>
+        
         {/* Sidebar */}
         <div style={styles.sidebar}>
           <div style={styles.sidebarContent}>
@@ -769,7 +738,7 @@ const UserDashboard = () => {
                   />
                 ) : (
                   <div style={styles.profilePlaceholder}>
-                    <User size={40} color="white" />
+                    <User size={32} color="white" />
                   </div>
                 )}
                 <div style={styles.profileStatus}></div>
@@ -786,19 +755,21 @@ const UserDashboard = () => {
             </div>
             
             {/* Navigation */}
-            <nav style={styles.navigation}>
-              {navItems.map((item) => (
-                <NavLink 
-                  key={item.to}
-                  to={item.to} 
-                  className="nav-link"
-                  style={styles.navLink}
-                >
-                  <item.icon size={20} />
-                  <span>{item.label}</span>
-                </NavLink>
-              ))}
-            </nav>
+            <div style={styles.navigationContainer}>
+              <nav style={styles.navigation}>
+                {navItems.map((item) => (
+                  <NavLink 
+                    key={item.to}
+                    to={item.to} 
+                    className="nav-link"
+                    style={styles.navLink}
+                  >
+                    <item.icon size={20} />
+                    <span>{item.label}</span>
+                  </NavLink>
+                ))}
+              </nav>
+            </div>
           </div>
           
           {/* Logout Button */}
@@ -820,7 +791,7 @@ const UserDashboard = () => {
             <div style={styles.editForm}>
               <div style={styles.editFormCard}>
                 <div style={styles.editFormHeader}>
-                  <Edit3 size={32} color="#16a34a" />
+                  <Edit3 size={28} color="#22c55e" />
                   <h2 style={styles.editFormTitle}>Edit Profile</h2>
                 </div>
                 
@@ -897,7 +868,7 @@ const UserDashboard = () => {
                     style={styles.saveButton}
                     onClick={handleUpdate}
                   >
-                    <Save size={20} />
+                    <Save size={18} />
                     Save Changes
                   </button>
                   <button 
@@ -905,7 +876,7 @@ const UserDashboard = () => {
                     style={styles.cancelButton}
                     onClick={() => setEditing(false)}
                   >
-                    <X size={20} />
+                    <X size={18} />
                     Cancel
                   </button>
                 </div>
@@ -916,78 +887,77 @@ const UserDashboard = () => {
               {/* Welcome Header */}
               <div style={styles.welcomeHeader}>
                 <h1 style={styles.welcomeTitle}>
-                  Welcome back, {user?.username || 'Farmer'}! 🌱
+                  Welcome back, {user?.username || 'Farmer'}!
+                  <Sparkles size={24} style={styles.sparkleIcon} />
                 </h1>
-                <p style={styles.welcomeSubtitle}>Here's your farm dashboard overview</p>
+                <p style={styles.welcomeSubtitle}>
+                  Here's your farm dashboard overview
+                </p>
               </div>
 
               {/* Weather Card */}
               <div style={styles.card}>
-                <div style={styles.cardDecorative}></div>
+                <div style={styles.cardHeader}>
+                  <Cloud size={28} color="#3b82f6" />
+                  <h3 style={styles.cardTitle}>Farm Weather Forecast</h3>
+                </div>
                 
-                <div style={styles.cardContent}>
-                  <div style={styles.cardHeader}>
-                    <Cloud size={32} color="#3b82f6" />
-                    <h3 style={styles.cardTitle}>Farm Weather Forecast</h3>
+                <div style={styles.locationInfo}>
+                  <MapPin size={20} color="rgba(255, 255, 255, 0.7)" />
+                  <span style={styles.locationText}>{weather.location}</span>
+                </div>
+                
+                {weather.loading ? (
+                  <div>
+                    <div style={styles.loadingSpinner}></div>
+                    <p style={styles.loadingText}>Loading weather data...</p>
                   </div>
-                  
-                  <div style={styles.locationInfo}>
-                    <MapPin size={20} color="#6b7280" />
-                    <span style={styles.locationText}>{weather.location}</span>
-                  </div>
-                  
-                  {weather.loading ? (
-                    <div style={styles.loadingContainer}>
-                      <div style={styles.loadingSpinner}></div>
-                      <span style={styles.loadingText}>Loading weather data...</span>
+                ) : (
+                  <div className="weather-grid" style={styles.weatherGrid}>
+                    <div style={styles.temperatureDisplay}>
+                      <div style={styles.temperature}>{weather.temp}°C</div>
+                      <div style={styles.condition}>{weather.condition}</div>
                     </div>
-                  ) : (
-                    <div className="weather-grid" style={styles.weatherGrid}>
-                      <div style={styles.temperatureDisplay}>
-                        <div style={styles.temperature}>{weather.temp}°C</div>
-                        <div style={styles.condition}>{weather.condition}</div>
+                    
+                    <div style={styles.weatherStats}>
+                      <div style={styles.weatherStatCard}>
+                        <div style={styles.weatherStatHeader}>
+                          <Droplets size={20} color="#3b82f6" />
+                          <span style={styles.weatherStatLabel}>Humidity</span>
+                        </div>
+                        <div style={styles.weatherStatValue}>{weather.humidity}%</div>
                       </div>
                       
-                      <div style={styles.weatherStats}>
-                        <div style={{...styles.weatherStatCard, ...styles.weatherStatCardBlue}}>
-                          <div style={styles.weatherStatHeader}>
-                            <Droplets size={20} color="#3b82f6" />
-                            <span style={styles.weatherStatLabel}>Humidity</span>
-                          </div>
-                          <div style={{...styles.weatherStatValue, ...styles.weatherStatValueBlue}}>{weather.humidity}%</div>
+                      <div style={styles.weatherStatCard}>
+                        <div style={styles.weatherStatHeader}>
+                          <Wind size={20} color="#22c55e" />
+                          <span style={styles.weatherStatLabel}>Wind Speed</span>
                         </div>
-                        
-                        <div style={{...styles.weatherStatCard, ...styles.weatherStatCardGreen}}>
-                          <div style={styles.weatherStatHeader}>
-                            <Wind size={20} color="#16a34a" />
-                            <span style={styles.weatherStatLabel}>Wind Speed</span>
-                          </div>
-                          <div style={{...styles.weatherStatValue, ...styles.weatherStatValueGreen}}>{weather.wind} km/h</div>
+                        <div style={styles.weatherStatValue}>{weather.wind} km/h</div>
+                      </div>
+                      
+                      <div style={styles.weatherStatCard}>
+                        <div style={styles.weatherStatHeader}>
+                          <CloudRain size={20} color="#8b5cf6" />
+                          <span style={styles.weatherStatLabel}>Precipitation</span>
                         </div>
-                        
-                        <div style={{...styles.weatherStatCard, ...styles.weatherStatCardPurple}}>
-                          <div style={styles.weatherStatHeader}>
-                            <CloudRain size={20} color="#7c3aed" />
-                            <span style={styles.weatherStatLabel}>Precipitation</span>
-                          </div>
-                          <div style={{...styles.weatherStatValue, ...styles.weatherStatValuePurple}}>{weather.precipitation} mm</div>
+                        <div style={styles.weatherStatValue}>{weather.precipitation} mm</div>
+                      </div>
+                      
+                      <div style={styles.weatherStatCard}>
+                        <div style={styles.weatherStatHeader}>
+                          <Thermometer size={20} color="#fbbf24" />
+                          <span style={styles.weatherStatLabel}>Farm Advice</span>
                         </div>
-                        
-                        <div style={{...styles.weatherStatCard, ...styles.weatherStatCardOrange}}>
-                          <div style={styles.weatherStatHeader}>
-                            <Thermometer size={20} color="#ea580c" />
-                            <span style={styles.weatherStatLabel}>Farm Advice</span>
-                          </div>
-                          <div style={styles.weatherAdvice}>
-                            {weather.condition.includes('rain') ? 
-                              "Good for planting" : 
-                              "Consider irrigation"}
-                          </div>
+                        <div style={styles.weatherAdvice}>
+                          {weather.condition.includes('rain') ? 
+                            "Good for planting" : 
+                            "Consider irrigation"}
                         </div>
                       </div>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
               
               {/* Farm Tips and Stats */}
@@ -995,7 +965,7 @@ const UserDashboard = () => {
                 {/* Farm Tips */}
                 <div style={styles.card}>
                   <div style={styles.cardHeader}>
-                    <Lightbulb size={32} color="#eab308" />
+                    <Lightbulb size={28} color="#fbbf24" />
                     <h3 style={styles.cardTitle}>Today's Farming Tip</h3>
                   </div>
                   
@@ -1007,14 +977,14 @@ const UserDashboard = () => {
                 {/* Quick Stats */}
                 <div style={styles.card}>
                   <div style={styles.cardHeader}>
-                    <BarChart3 size={32} color="#16a34a" />
+                    <BarChart3 size={28} color="#22c55e" />
                     <h3 style={styles.cardTitle}>Farm Overview</h3>
                   </div>
                   
                   <div style={styles.statsContainer}>
-                    <div style={{...styles.statItem, ...styles.statItemGreen}}>
+                    <div style={styles.statItem}>
                       <div style={styles.statItemLeft}>
-                        <div style={{...styles.statIcon, ...styles.statIconGreen}}>
+                        <div style={styles.statIcon}>
                           <Sprout size={20} color="white" />
                         </div>
                         <div style={styles.statInfo}>
@@ -1022,12 +992,12 @@ const UserDashboard = () => {
                           <div style={styles.statSubtitle}>Current Status</div>
                         </div>
                       </div>
-                      <div style={{...styles.statValue, ...styles.statValueGreen}}>Optimal</div>
+                      <div style={styles.statValue}>Optimal</div>
                     </div>
                     
-                    <div style={{...styles.statItem, ...styles.statItemBlue}}>
+                    <div style={styles.statItem}>
                       <div style={styles.statItemLeft}>
-                        <div style={{...styles.statIcon, ...styles.statIconBlue}}>
+                        <div style={styles.statIcon}>
                           <TrendingUp size={20} color="white" />
                         </div>
                         <div style={styles.statInfo}>
@@ -1035,12 +1005,12 @@ const UserDashboard = () => {
                           <div style={styles.statSubtitle}>Best for</div>
                         </div>
                       </div>
-                      <div style={{...styles.statValue, ...styles.statValueBlue}}>Tomatoes</div>
+                      <div style={styles.statValue}>Tomatoes</div>
                     </div>
                     
-                    <div style={{...styles.statItem, ...styles.statItemPurple}}>
+                    <div style={styles.statItem}>
                       <div style={styles.statItemLeft}>
-                        <div style={{...styles.statIcon, ...styles.statIconPurple}}>
+                        <div style={styles.statIcon}>
                           <DollarSign size={20} color="white" />
                         </div>
                         <div style={styles.statInfo}>
@@ -1048,7 +1018,7 @@ const UserDashboard = () => {
                           <div style={styles.statSubtitle}>Rice per kg</div>
                         </div>
                       </div>
-                      <div style={{...styles.statValue, ...styles.statValuePurple}}>₱25</div>
+                      <div style={styles.statValue}>₱25</div>
                     </div>
                   </div>
                 </div>
