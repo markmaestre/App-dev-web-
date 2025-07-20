@@ -26,7 +26,8 @@ import {
   Package,
   CreditCard,
   Store,
-  Sparkles
+  Sparkles,
+  Wallet
 } from 'lucide-react';
 
 const UserDashboard = () => {
@@ -638,12 +639,10 @@ const UserDashboard = () => {
   };
 
   const navItems = [
-    { to: "/dashboard", icon: Home, label: "Dashboard" },
+
     { to: "/weather", icon: Cloud, label: "Weather" },
     { to: "/prediction", icon: TrendingUp, label: "Crop Prediction" },
     { to: "/market", icon: Store, label: "Market" },
-    { to: "/cart", icon: ShoppingCart, label: "My Cart" },
-    { to: "/records", icon: FileText, label: "Farm Records" },
     { to: "/learning", icon: BookOpen, label: "Learning" },
     { to: "/assistant", icon: Bot, label: "Assistant" },
   ];
@@ -960,69 +959,7 @@ const UserDashboard = () => {
                 )}
               </div>
               
-              {/* Farm Tips and Stats */}
-              <div className="grid-two-columns" style={styles.gridTwoColumns}>
-                {/* Farm Tips */}
-                <div style={styles.card}>
-                  <div style={styles.cardHeader}>
-                    <Lightbulb size={28} color="#fbbf24" />
-                    <h3 style={styles.cardTitle}>Today's Farming Tip</h3>
-                  </div>
-                  
-                  <div style={styles.tipCard}>
-                    <p style={styles.tipText}>{getRandomTip()}</p>
-                  </div>
-                </div>
-                
-                {/* Quick Stats */}
-                <div style={styles.card}>
-                  <div style={styles.cardHeader}>
-                    <BarChart3 size={28} color="#22c55e" />
-                    <h3 style={styles.cardTitle}>Farm Overview</h3>
-                  </div>
-                  
-                  <div style={styles.statsContainer}>
-                    <div style={styles.statItem}>
-                      <div style={styles.statItemLeft}>
-                        <div style={styles.statIcon}>
-                          <Sprout size={20} color="white" />
-                        </div>
-                        <div style={styles.statInfo}>
-                          <div style={styles.statTitle}>Soil Quality</div>
-                          <div style={styles.statSubtitle}>Current Status</div>
-                        </div>
-                      </div>
-                      <div style={styles.statValue}>Optimal</div>
-                    </div>
-                    
-                    <div style={styles.statItem}>
-                      <div style={styles.statItemLeft}>
-                        <div style={styles.statIcon}>
-                          <TrendingUp size={20} color="white" />
-                        </div>
-                        <div style={styles.statInfo}>
-                          <div style={styles.statTitle}>Planting Season</div>
-                          <div style={styles.statSubtitle}>Best for</div>
-                        </div>
-                      </div>
-                      <div style={styles.statValue}>Tomatoes</div>
-                    </div>
-                    
-                    <div style={styles.statItem}>
-                      <div style={styles.statItemLeft}>
-                        <div style={styles.statIcon}>
-                          <DollarSign size={20} color="white" />
-                        </div>
-                        <div style={styles.statInfo}>
-                          <div style={styles.statTitle}>Market Prices</div>
-                          <div style={styles.statSubtitle}>Rice per kg</div>
-                        </div>
-                      </div>
-                      <div style={styles.statValue}>₱25</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+             
             </div>
           )}
         </div>

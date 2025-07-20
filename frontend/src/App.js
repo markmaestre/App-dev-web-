@@ -13,6 +13,7 @@ import CartPage from './Components/Customer/CartPage';
 import MarketDetails from './Components/Customer/MarketPage';
 import PaymentHistory from './Components/Customer/PaymentHistory';
 import Order from './Components/Customer/Order';
+import Wallet from './Components/Client/Wallet';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
         <Route path="/shop" element={<MarketDetails />} />
         <Route path="/payment-history" element={<PaymentHistory />} />
         <Route path="/orders" element={<Order />} />
+        <Route path="/wallet" element={<Wallet />} />
       </Routes>
 
     </Router>
